@@ -27,6 +27,8 @@
     #include <list.h>
     #include <task.h>
     #include <interrupt.h>
+    #include <device.h>
+    #include <fs.h>
 
     #include <firmware.h>
     #include <arch.h>
