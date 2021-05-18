@@ -1,0 +1,13 @@
+import os
+from building import *
+
+Import('osconfig')
+
+cwd = GetCurrentDir()
+group = []
+list = os.listdir(cwd)
+
+if osconfig.FIRMWARE in list:
+    group = group + SConscript(os.path.join(osconfig.FIRMWARE, 'SConscript'))
+
+Return('group')

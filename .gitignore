@@ -1,0 +1,6 @@
+.vscode
+*.pyc
+*.asm
+*.dblite
+*.elf
+*.map
