@@ -4,3 +4,6 @@
 *.dblite
 *.elf
 *.map
+*.o
+*.bin
+build
