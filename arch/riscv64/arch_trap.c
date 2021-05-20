@@ -157,15 +157,17 @@ void print_symbol(os_symtab_item *symbol,size_t address)
 
     if(symbol -> size)
     {
-        os_printf(" : 0x%x",symbol -> size);
+        os_printf(" : 0x%x>",symbol -> size);
+    }
+    else
+    {
+        os_printf(">");
     }
 
     if(address > symbol -> address)
     {
         os_printf(" + 0x%x",address - symbol -> address);
     }
-
-    os_printf(">");
 }
 
 void print_symbol_info(size_t address,bool_t function)
