@@ -24,7 +24,7 @@ void bsp_after_heap_init()
 void bsp_after_task_scheduler_init()
 {
     os_printf("bsp_after_task_scheduler_init\n");
-    asm volatile("ebreak");
+    //asm volatile("ebreak");
 }
 
 void bsp_puts(const char *str)
