@@ -48,4 +48,4 @@ if PLATFORM == 'gcc':
     CXXFLAGS = CFLAGS
 
 DUMP_ACTION = OBJDUMP + ' -D -S $TARGET > dreamos.asm\n'
-POST_ACTION = OBJCPY + ' -O binary $TARGET dreamos.bin\n' + SIZE + ' $TARGET \n'
+POST_ACTION = OBJCPY + ' -O binary $TARGET dreamos.bin\n../../tools/osdebugsupport/osdebugsupport64 $TARGET dreamos.bin\n' + SIZE + ' $TARGET \n'

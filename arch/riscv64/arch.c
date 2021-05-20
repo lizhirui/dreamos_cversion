@@ -27,7 +27,7 @@ void arch_task_stack_frame_init(task_t *task)
     frame -> gp = (size_t)&__global_pointer$;
     frame -> a0 = task -> arg;
     frame -> sepc = (size_t)task -> entry;
-    frame -> user_sp_exc_stack = task -> stack_addr + task -> stack_size;
+    frame -> user_sp = task -> stack_addr + task -> stack_size;
     /* force to supervisor mode(SPP=1) and set SPIE and SUM to 1 */
     frame -> sstatus = 0x000401120;
 }

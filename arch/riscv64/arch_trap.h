@@ -47,7 +47,7 @@
         size_t t4;
         size_t t5;
         size_t t6;
-        size_t user_sp_exc_stack;
+        size_t user_sp;
     };
 
     enum exception_type
