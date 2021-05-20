@@ -1,3 +1,13 @@
+/*
+ * Copyright lizhirui
+ *
+ * SPDX-License-Identifier: Apache-2.0
+ *
+ * Change Logs:
+ * Date           Author       Notes
+ * 2021-05-20     lizhirui     the first version
+ */
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <elf.h>

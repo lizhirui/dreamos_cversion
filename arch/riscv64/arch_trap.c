@@ -6,6 +6,7 @@
  * Change Logs:
  * Date           Author       Notes
  * 2021-05-18     lizhirui     the first version
+ * 2021-05-20     lizhirui     add os debug support
  */
 
 #include <dreamos.h>
