@@ -15,8 +15,8 @@
     
     void os_enter_interrupt();
     void os_leave_interrupt();
-    bool_t is_in_interrupt();
-    bool_t os_interrupt_disable();
-    void os_interrupt_enable(bool_t enabled);
+    os_bool_t os_is_in_interrupt();
+    os_bool_t os_interrupt_disable();
+    void os_interrupt_enable(os_bool_t enabled);
     
 #endif

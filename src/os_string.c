@@ -10,9 +10,9 @@
 
 #include <dreamos.h>
 
-size_t os_strlen(const char *str)
+os_size_t os_strlen(const char *str)
 {
-    size_t r = 0;
+    os_size_t r = 0;
 
     while(*str++)
     {
@@ -22,7 +22,7 @@ size_t os_strlen(const char *str)
     return r;
 }
 
-void os_memset(uint8_t *ptr,uint8_t value,size_t size)
+void os_memset(os_uint8_t *ptr,os_uint8_t value,os_size_t size)
 {
     while(size--)
     {
@@ -30,7 +30,7 @@ void os_memset(uint8_t *ptr,uint8_t value,size_t size)
     }
 }
 
-void os_memcpy(uint8_t *dst,uint8_t *src,size_t size)
+void os_memcpy(os_uint8_t *dst,os_uint8_t *src,os_size_t size)
 {
     while(size--)
     {

@@ -12,9 +12,9 @@
 #define __OS_STRING_H__
 
     #include <dreamos.h>
-    size_t os_strlen(const char *str);
-    void os_memset(uint8_t *ptr,uint8_t value,size_t size);
-    void os_memcpy(uint8_t *dst,uint8_t *src,size_t size);
+    os_size_t os_strlen(const char *str);
+    void os_memset(os_uint8_t *ptr,os_uint8_t value,os_size_t size);
+    void os_memcpy(os_uint8_t *dst,os_uint8_t *src,os_size_t size);
     void os_strcpy(char *dststr,const char *srcstr);
 
 #endif

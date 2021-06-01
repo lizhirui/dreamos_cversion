@@ -15,39 +15,39 @@
 
     struct TrapFrame
     {
-        size_t sepc;
-        size_t ra;
-        size_t sstatus;
-        size_t gp;
-        size_t tp;
-        size_t t0;
-        size_t t1;
-        size_t t2;
-        size_t s0_fp;
-        size_t s1;
-        size_t a0;
-        size_t a1;
-        size_t a2;
-        size_t a3;
-        size_t a4;
-        size_t a5;
-        size_t a6;
-        size_t a7;
-        size_t s2;
-        size_t s3;
-        size_t s4;
-        size_t s5;
-        size_t s6;
-        size_t s7;
-        size_t s8;
-        size_t s9;
-        size_t s10;
-        size_t s11;
-        size_t t3;
-        size_t t4;
-        size_t t5;
-        size_t t6;
-        size_t user_sp;
+        os_size_t sepc;
+        os_size_t ra;
+        os_size_t sstatus;
+        os_size_t gp;
+        os_size_t tp;
+        os_size_t t0;
+        os_size_t t1;
+        os_size_t t2;
+        os_size_t s0_fp;
+        os_size_t s1;
+        os_size_t a0;
+        os_size_t a1;
+        os_size_t a2;
+        os_size_t a3;
+        os_size_t a4;
+        os_size_t a5;
+        os_size_t a6;
+        os_size_t a7;
+        os_size_t s2;
+        os_size_t s3;
+        os_size_t s4;
+        os_size_t s5;
+        os_size_t s6;
+        os_size_t s7;
+        os_size_t s8;
+        os_size_t s9;
+        os_size_t s10;
+        os_size_t s11;
+        os_size_t t3;
+        os_size_t t4;
+        os_size_t t5;
+        os_size_t t6;
+        os_size_t user_sp;
     };
 
     enum exception_type
@@ -88,6 +88,6 @@
 
     const char *get_exception_name(enum exception_type exception_type);
     const char *get_interrupt_name(enum interrupt_type interrupt_type);
-    const char *get_trap_name(size_t scause);
+    const char *get_trap_name(os_size_t scause);
 
 #endif

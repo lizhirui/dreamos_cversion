@@ -11,15 +11,15 @@
 #include <dreamos.h>
 
 //用于中断处理
-bool_t bsp_interrupt_handler(enum interrupt_type interrupt_type)
+os_bool_t bsp_interrupt_handler(enum interrupt_type interrupt_type)
 {
     if(interrupt_type == INTERRUPT_SUPERVISOR_TIMER)
     {
         os_enter_interrupt();
         tick_isr();
         os_leave_interrupt();
-        return TRUE;
+        return OS_TRUE;
     }
 
-    return FALSE;
+    return OS_FALSE;
 }

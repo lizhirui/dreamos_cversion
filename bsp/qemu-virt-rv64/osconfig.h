@@ -14,4 +14,6 @@
     #define MAIN_TASK_PRIORITY (10)
     #define MAIN_TASK_TICK_INIT (1)
 
+    #define SLUB_MIN_PARTIAL (2)
+
 #endif

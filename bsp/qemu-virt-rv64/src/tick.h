@@ -11,7 +11,9 @@
 #ifndef __TICK_H__
 #define __TICK_H__
 
-    uint64_t get_ticks();
+    #include <dreamos.h>
+
+    os_uint64_t get_ticks();
     void tick_init();
     void tick_isr();
 

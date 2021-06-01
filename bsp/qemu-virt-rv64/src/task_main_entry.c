@@ -10,7 +10,7 @@
 
 #include <dreamos.h>
 
-ssize_t task_main_entry(size_t arg)
+os_ssize_t task_main_entry(os_size_t arg)
 {
     while(1)
     {

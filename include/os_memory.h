@@ -12,7 +12,13 @@
 #define __OS_MEMORY_H__
 
     #include <phypage.h>
+    #include <slub.h>
 
     void os_memory_init();
+    void *os_memory_alloc(os_size_t size);
+    void os_memory_free(void *mem);
+    os_size_t get_allocated_memory();
+    os_size_t get_total_memory();
+    os_size_t get_free_memory();
 
 #endif

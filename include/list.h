@@ -52,7 +52,7 @@
             (list_node_ptr) -> prev = (reference_node_ptr) -> prev; \
             (reference_node_ptr) -> prev = (list_node_ptr); \
              \
-            if((list_node_ptr) -> prev != NULL) \
+            if((list_node_ptr) -> prev != OS_NULL) \
             { \
                 (list_node_ptr) -> prev -> next = (list_node_ptr); \
             } \
@@ -65,7 +65,7 @@
             (list_node_ptr) -> prev = (reference_node_ptr); \
             (reference_node_ptr) -> next = (list_node_ptr); \
              \
-            if((list_node_ptr) -> next != NULL) \
+            if((list_node_ptr) -> next != OS_NULL) \
             { \
                 (list_node_ptr) -> next -> prev = (list_node_ptr); \
             } \
@@ -75,18 +75,18 @@
     #define list_node_remove(list_node_ptr) \
         do \
         { \
-            if((list_node_ptr) -> prev != NULL) \
+            if((list_node_ptr) -> prev != OS_NULL) \
             { \
                 (list_node_ptr) -> prev -> next = (list_node_ptr) -> next; \
             } \
              \
-            if((list_node_ptr) -> next != NULL) \
+            if((list_node_ptr) -> next != OS_NULL) \
             { \
                 (list_node_ptr) -> next -> prev = (list_node_ptr) -> prev; \
             }; \
              \
-            (list_node_ptr) -> prev = NULL; \
-            (list_node_ptr) -> next = NULL; \
+            (list_node_ptr) -> prev = OS_NULL; \
+            (list_node_ptr) -> next = OS_NULL; \
         }while(0)
 
     #define list_insert_head(list,list_node) list_node_insert_after(list_node,&list)

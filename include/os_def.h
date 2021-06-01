@@ -11,6 +11,8 @@
 #ifndef __OS_DEF_H__
 #define __OS_DEF_H__
 
+    #include <stddef.h>
+
     #define SIZE(bit) (1UL << (bit))
     #define MASK(bit) (SIZE(bit) - 1UL)
     #define UMASK(bit) (~(MASK(bit)))
@@ -28,12 +30,31 @@
     #define ALIGN_DOWN_MAX(value) ((sizeof(size_t) << 3) - __builtin_clzl(value) - 1)
     #define ALIGN_UP_MIN(value) (IS_POWER_OF_2(value) ? ALIGN_DOWN_MAX(value) : (ALIGN_DOWN_MAX(value) + 1))
 
-    typedef size_t bool_t;
+    #define MAX(a,b) (((a) > (b)) ? (a) : (b))
+    #define MIN(a,b) (((a) < (b)) ? (a) : (b))
 
-    #define TRUE 1
-    #define FALSE 0
+    #define ADDR_OFFSET(addr,offset) ((void *)(((size_t)(addr)) + ((size_t)(offset))))
 
-    #define ENTER_CRITICAL_AREA() bool_t interrupt_state = os_interrupt_disable()
+    typedef uint8_t os_uint8_t;
+    typedef uint16_t os_uint16_t;
+    typedef uint32_t os_uint32_t;
+    typedef uint64_t os_uint64_t;
+    typedef size_t os_size_t;
+
+    typedef int8_t os_int8_t;
+    typedef int16_t os_int16_t;
+    typedef int32_t os_int32_t;
+    typedef int64_t os_int64_t;
+    typedef ssize_t os_ssize_t;
+
+    typedef size_t os_bool_t;
+
+    #define OS_TRUE 1
+    #define OS_FALSE 0
+
+    #define OS_NULL NULL
+
+    #define ENTER_CRITICAL_AREA() os_bool_t interrupt_state = os_interrupt_disable()
     #define LEAVE_CRITICAL_AREA() os_interrupt_enable(interrupt_state)
 
 #endif

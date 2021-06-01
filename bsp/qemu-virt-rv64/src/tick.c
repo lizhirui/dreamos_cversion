@@ -10,12 +10,12 @@
 
 #include <dreamos.h>
 
-static volatile uint64_t time_elapsed = 0;
-static volatile uint64_t tick_cycles = 0;
+static volatile os_uint64_t time_elapsed = 0;
+static volatile os_uint64_t tick_cycles = 0;
 
-uint64_t get_ticks()
+os_uint64_t get_ticks()
 {
-    uint64_t r;
+    os_uint64_t r;
 
     asm volatile("rdtime %0" : "=r"(r));
     return r;
@@ -23,7 +23,7 @@ uint64_t get_ticks()
 
 void tick_init()
 {
-    uint64_t interval = 1000ULL / TICK_PER_SECOND;
+    os_uint64_t interval = 1000ULL / TICK_PER_SECOND;
     clear_csr(sie,SIP_STIP);
     tick_cycles = 10000000 / 1000 * interval - 1;
     sbi_set_timer(get_ticks() + tick_cycles);
