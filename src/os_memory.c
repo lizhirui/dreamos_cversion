@@ -10,6 +10,7 @@
 
 #include <dreamos.h>
 
+//内核内存系统初始化函数
 void os_memory_init()
 {
     phypage_init();

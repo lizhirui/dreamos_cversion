@@ -23,9 +23,9 @@ uint64_t get_ticks()
 
 void tick_init()
 {
-    uint64_t interval = 10000ULL / TICK_PER_SECOND;
+    uint64_t interval = 1000ULL / TICK_PER_SECOND;
     clear_csr(sie,SIP_STIP);
-    tick_cycles = 3686400 / 5000 * interval - 1;
+    tick_cycles = 10000000 / 1000 * interval - 1;
     sbi_set_timer(get_ticks() + tick_cycles);
     set_csr(sie,SIP_STIP);
 }

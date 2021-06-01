@@ -12,6 +12,7 @@
 
 extern size_t __global_pointer$;
 
+//用于arch实现初始化任务栈帧
 void arch_task_stack_frame_init(task_t *task)
 {
     task -> sp -= sizeof(struct TrapFrame);

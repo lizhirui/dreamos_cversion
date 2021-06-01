@@ -10,6 +10,7 @@
 
 #include <dreamos.h>
 
+//用于中断处理
 bool_t bsp_interrupt_handler(enum interrupt_type interrupt_type)
 {
     if(interrupt_type == INTERRUPT_SUPERVISOR_TIMER)

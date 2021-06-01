@@ -34,6 +34,7 @@ static void print_system_info()
     os_printf("\n");
 }
 
+//内核初始化函数，也是内核入口
 void kernel_init()
 {
     bsp_early_init();

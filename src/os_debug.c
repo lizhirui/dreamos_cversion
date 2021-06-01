@@ -11,6 +11,7 @@
 
 #include <dreamos.h>
 
+//用于内核断言支持
 void os_assert_handler(const char *ex_string,const char *func,size_t line)
 {
     os_printf("(%s) assertion failed at function:%s, line number:%d \n",ex_string,func,line);
@@ -21,6 +22,7 @@ extern size_t _osdebug_start;
 
 static os_symtab_header *symtab_header = (os_symtab_header *)&_osdebug_start;
 
+//该函数用于在指定的表中查找某个地址对应的符号的描述结构体指针，返回值的符号遵循规则详见文档
 os_symtab_item *find_symbol_table(size_t symbol_table_addr,size_t symbol_num,size_t address)
 {
     size_t left = 0;
@@ -74,11 +76,13 @@ os_symtab_item *find_symbol_table(size_t symbol_table_addr,size_t symbol_num,siz
     return &sym_table[left];
 }
 
+//该函数用于根据给定的符号指针从字符串表中找到对应的符号名指针并返回
 const char *get_symbol_name(os_symtab_item *symbol)
 {
     return (const char *)((size_t)&_osdebug_start + symtab_header -> string_table_offset + symbol -> name_offset);
 }
 
+//该函数可以根据给定的符号和地址向中断打印出标准格式的符号信息
 void print_symbol(os_symtab_item *symbol,size_t address)
 {
     os_printf("<%s(0x%p)",get_symbol_name(symbol),symbol -> address);
@@ -98,6 +102,7 @@ void print_symbol(os_symtab_item *symbol,size_t address)
     }
 }
 
+//该函数用于打印出一个地址关联的全部符号信息
 void print_symbol_info(size_t address,bool_t function)
 {
     os_symtab_item *function_symbol = find_symbol_table(symtab_header -> function_table_offset,symtab_header -> function_table_num,address);
@@ -255,6 +260,7 @@ void print_symbol_info(size_t address,bool_t function)
     }
 }
 
+//该函数用于在出错时打印出栈跟踪信息
 void print_stacktrace(size_t epc,size_t fp)
 {
     os_printf("-----------------------------Dump Stacktrace----------------------------\n\n");

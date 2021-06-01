@@ -11,6 +11,7 @@
 #include "encoding.h"
 #include "stackframe.h"
     
+/*用于arch实现任务切换*/
     .section .text
     .global arch_task_switch
 arch_task_switch:

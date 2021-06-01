@@ -112,19 +112,19 @@ void generate_file()
     if(symtab_index == -1)
     {
         printf("can't find .symtab section\n");
-        exit(6);
+        exit(7);
     }
 
     if(osdebug_index == -1)
     {
         printf("can't find .osdebug section\n");
-        exit(7);
+        exit(8);
     }
 
     if(file_start_offset == 0)
     {
         printf("file_start_offset is 0\n");
-        exit(8);
+        exit(9);
     }
 
     printf("file_start_offset: %p\n",(void *)file_start_offset);
@@ -191,7 +191,7 @@ void generate_file()
     if(shdr[osdebug_index].sh_size < need_space)
     {
         printf(".osdebug section is too small\n");
-        exit(7);
+        exit(10);
     }
 
     os_symtab_header header;
@@ -367,7 +367,7 @@ int main(int argc,char **argv)
     else
     {
         printf("elf file is not %s\n",errstr);
-        return 5;
+        return 6;
     }
 
     return 0;

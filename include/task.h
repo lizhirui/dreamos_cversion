@@ -27,22 +27,22 @@
 
     typedef struct task
     {
-        size_t sp;
-        size_t stack_addr;
-        size_t stack_size;
-        size_t pid;
-        size_t tid;
-        size_t sid;
-        size_t priority;
-        size_t tick_init;
-        size_t tick_remaining;
-        task_state_t task_state;
-        task_func_t entry;
-        size_t arg;
-        task_exit_func_t exit_func;
-        ssize_t exit_code;
-        list_node task_node;
-        list_node schedule_node;
+        size_t sp;//栈顶指针
+        size_t stack_addr;//栈起始地址
+        size_t stack_size;//栈大小
+        size_t pid;//Process ID
+        size_t tid;//Thread ID
+        size_t sid;//Session ID
+        size_t priority;//任务优先级
+        size_t tick_init;//拥有的时间片
+        size_t tick_remaining;//剩余时间片
+        task_state_t task_state;//任务状态
+        task_func_t entry;//任务入口
+        size_t arg;//任务入口参数
+        task_exit_func_t exit_func;//任务退出函数（用于任务结束后的环境清理）
+        ssize_t exit_code;//任务退出码
+        list_node task_node;//任务列表中的节点
+        list_node schedule_node;//调度列表中的节点
     }task_t;
 
     task_t *get_current_task();

@@ -10,6 +10,7 @@
 
 #include <dreamos.h>
 
+//内核调度定时器中断处理程序
 void kernel_tick()
 {
     task_t *cur_task = get_current_task();

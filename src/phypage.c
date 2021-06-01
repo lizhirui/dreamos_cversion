@@ -149,6 +149,7 @@ static void *_alloc(size_t order)
     return NULL;
 }
 
+//页面分配（其大小为2的幂，且>=size）
 void *phypage_alloc(size_t size)
 {
     return _alloc(size_to_order(size));
@@ -181,21 +182,25 @@ static void _free(void *addr,size_t old_order)
     LEAVE_CRITICAL_AREA();
 }
 
+//页面释放
 void phypage_free(void *addr,size_t old_size)
 {
     _free(addr,size_to_order(old_size));
 }
 
+//获取已分配的页面数量
 size_t get_allocated_page_count()
 {
     return page_allocated;
 }
 
+//获取总页面数量
 size_t get_total_page_count()
 {
     return (page_memory_end - page_memory_start) >> PAGE_BITS;
 }
 
+//获取空闲页面数量
 size_t get_free_page_count()
 {
     return get_total_page_count() - get_allocated_page_count();
@@ -218,6 +223,7 @@ static void test()
     OS_ASSERT(page_allocated == 0);
 }
 
+//buddy system初始化函数
 void phypage_init()
 {
     size_t heap_start = (size_t)&_heap_start;
