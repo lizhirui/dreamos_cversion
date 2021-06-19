@@ -47,6 +47,9 @@
 
     task_t *get_current_task();
     void task_init(task_p task,os_size_t stack_size,os_size_t priority,os_size_t tick_init,task_func_t entry,os_size_t arg);
+    void task_yield();
+    void task_sleep();
+    void task_wakeup(task_t *task);
     void task_schedule();
     void task_scheduler_init();
     void task_scheduler_start();

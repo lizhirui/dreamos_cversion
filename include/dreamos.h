@@ -24,6 +24,9 @@
     #include <os_string.h>
     #include <os_memory.h>
     #include <os_debug.h>
+    #include <os_terminal_color.h>
+    #include <os_annotation.h>
+
     #include <list.h>
     #include <task.h>
     #include <interrupt.h>

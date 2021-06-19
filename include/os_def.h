@@ -54,7 +54,7 @@
 
     #define OS_NULL NULL
 
-    #define ENTER_CRITICAL_AREA() os_bool_t interrupt_state = os_interrupt_disable()
-    #define LEAVE_CRITICAL_AREA() os_interrupt_enable(interrupt_state)
+    #define OS_ENTER_CRITICAL_AREA() os_bool_t interrupt_state = os_interrupt_disable()
+    #define OS_LEAVE_CRITICAL_AREA() os_interrupt_enable(interrupt_state)
 
 #endif

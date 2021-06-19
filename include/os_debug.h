@@ -16,11 +16,14 @@
 
     void os_assert_handler(const char *ex_string,const char *func,os_size_t line);
 
-    #define OS_ASSERT(EX)                                                         \
-    if (!(EX))                                                                    \
+    #define OS_ASSERT(condition)                                                         \
+    do                                                                            \
     {                                                                             \
-        os_assert_handler(#EX, __FUNCTION__, __LINE__);                           \
-    }
+        if (!(condition))                                                                \
+        {                                                                         \
+            os_assert_handler(#condition,__FUNCTION__,__LINE__);                       \
+        }                                                                         \
+    }while(0)
 
     typedef struct os_symtab_header
     {

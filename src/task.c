@@ -34,6 +34,7 @@ static task_t *get_next_task()
 {
     os_size_t i;
 
+    //按优先级查表
     for(i = 0;i < TASK_PRIORITY_UPLIMIT;i++)
     {
         if(!list_empty(priority_ready_list[i]))
@@ -55,10 +56,11 @@ void task_exit(os_ssize_t exit_code)
 //执行任务调度
 void task_schedule()
 {
-    ENTER_CRITICAL_AREA();
+    OS_ENTER_CRITICAL_AREA();
     task_t *next_task = get_next_task();
     OS_ASSERT(next_task != OS_NULL);
 
+    //优先级检测，若当前任务仍处于运行态且新任务优先级更低，则继续执行当前任务
     if(current_task -> task_state == TASK_STATE_RUNNING)
     {
         if(next_task -> priority > current_task -> priority)
@@ -67,6 +69,7 @@ void task_schedule()
         }
     }
     
+    //检查是否需要进行任务切换
     if(next_task != current_task)
     {
         list_node_remove(&next_task -> schedule_node);
@@ -77,6 +80,7 @@ void task_schedule()
             current_task -> task_state = TASK_STATE_READY;
         }
 
+        //时间片重置
         if(current_task -> tick_remaining == 0)
         {
             current_task -> tick_remaining = current_task -> tick_init;
@@ -98,7 +102,7 @@ void task_schedule()
         }
     }
 
-    LEAVE_CRITICAL_AREA();
+    OS_LEAVE_CRITICAL_AREA();
 }
 
 //获取任务内核栈顶
@@ -110,6 +114,7 @@ os_size_t task_get_kernel_stack_top(task_t *task)
 //初始化一个任务结构体
 void task_init(task_p task,os_size_t stack_size,os_size_t priority,os_size_t tick_init,task_func_t entry,os_size_t arg)
 {
+    OS_ANNOTATION_CANNOT_RUN_IN_INTERRUPT();
     task -> stack_addr = (os_size_t)os_memory_alloc(stack_size);
     OS_ASSERT(task -> stack_addr != ((os_size_t)OS_NULL));
     task -> stack_size = stack_size;
@@ -126,12 +131,57 @@ void task_init(task_p task,os_size_t stack_size,os_size_t priority,os_size_t tic
     list_insert_tail(priority_ready_list[task -> priority],&task -> schedule_node);
 }
 
+//设置当前任务状态
+static void set_current_task_state(task_state_t state)
+{
+    OS_ENTER_CRITICAL_AREA();
+    task_t *task = get_current_task();
+    OS_ASSERT(task != OS_NULL);
+    task -> task_state = state;
+    OS_LEAVE_CRITICAL_AREA();
+}
+
+//立即放弃控制权
+void task_yield()
+{
+    OS_ANNOTATION_CANNOT_RUN_IN_INTERRUPT();
+    OS_ENTER_CRITICAL_AREA();
+    task_schedule();
+    OS_LEAVE_CRITICAL_AREA();
+}
+
+//任务睡眠
+void task_sleep()
+{
+    OS_ANNOTATION_CANNOT_RUN_IN_INTERRUPT();
+    OS_ENTER_CRITICAL_AREA();
+    set_current_task_state(TASK_STATE_SLEEPING);
+    task_schedule();
+    OS_LEAVE_CRITICAL_AREA();
+}
+
+//任务唤醒
+void task_wakeup(task_t *task)
+{
+    OS_ANNOTATION_CANNOT_RUN_IN_INTERRUPT();
+    OS_ENTER_CRITICAL_AREA();
+    
+    if(task -> task_state == TASK_STATE_SLEEPING)
+    {
+        task -> task_state = TASK_STATE_READY;
+        list_insert_tail(priority_ready_list[task -> priority],&task -> schedule_node);
+        task_schedule();
+    }
+    
+    OS_LEAVE_CRITICAL_AREA();
+}
+
 static task_t task_idle;
 static task_t task_main;
 
 void task_main_entry(os_size_t arg);
 
-static task_t task_test;
+task_t task_test;
 
 //idle任务入口函数
 void task_idle_entry(os_size_t arg)
@@ -148,6 +198,7 @@ void task_test_entry()
     while(1)
     {
         os_printf("task_test_entry\n");
+        task_sleep();
     }
 }
 

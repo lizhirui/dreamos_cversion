@@ -120,7 +120,7 @@ static inline page_metainfo_t *get_big_page(page_metainfo_t *page,page_metainfo_
 static void *_alloc(os_size_t order)
 {
     os_size_t i;
-    ENTER_CRITICAL_AREA();
+    OS_ENTER_CRITICAL_AREA();
 
     for(i = order;i < BUDDY_ORDER_UPLIMIT;i++)
     {
@@ -141,13 +141,13 @@ static void *_alloc(os_size_t order)
 
             page_allocated += SIZE(order - PAGE_BITS);
             SYNC_DATA();
-            LEAVE_CRITICAL_AREA();
+            OS_LEAVE_CRITICAL_AREA();
             return (void *)addr;
         }
     }
 
     SYNC_DATA();
-    LEAVE_CRITICAL_AREA();
+    OS_LEAVE_CRITICAL_AREA();
     return OS_NULL;
 }
 
@@ -159,7 +159,7 @@ void *phypage_alloc(os_size_t size)
 
 static void _free(void *addr,os_size_t old_order)
 {
-    ENTER_CRITICAL_AREA();
+    OS_ENTER_CRITICAL_AREA();
     page_metainfo_t *page = addr_to_page_metainfo((os_size_t)addr);
     os_size_t i;
 
@@ -181,16 +181,16 @@ static void _free(void *addr,os_size_t old_order)
     }
 
     SYNC_DATA();
-    LEAVE_CRITICAL_AREA();
+    OS_LEAVE_CRITICAL_AREA();
 }
 
 //页面释放
 void phypage_free(void *addr)
 {
-    ENTER_CRITICAL_AREA();
+    OS_ENTER_CRITICAL_AREA();
     page_metainfo_t *page = addr_to_page_metainfo((os_size_t)addr);
     _free(addr,page -> order_allocated);
-    LEAVE_CRITICAL_AREA();
+    OS_LEAVE_CRITICAL_AREA();
 }
 
 //获取已分配的页面数量
