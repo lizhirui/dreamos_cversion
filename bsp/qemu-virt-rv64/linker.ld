@@ -1,7 +1,12 @@
 OUTPUT_ARCH(riscv)
 ENTRY(_start)
 
-BASE_ADDRESS = 0x80200000;
+/*IO Mapping 0xFFFF FFC0 0000 0000 ~ 0xFFFF FFFF FFFF FFFF 256GB*/
+/*Kernel Mapping 0x0000 0020 0000 0000 ~ 0x0000 003F FFFF FFFF 128GB*/
+/*User Mapping 0x0000 0000 0020 0000 ~ 0x0000 001F FFFF FFFF 128GB*/
+
+BASE_ADDRESS = 0x0000002000200000;
+/*BASE_ADDRESS = 0x80200000;*/
 STACK_SIZE = 16K;
 
 SECTIONS
@@ -26,8 +31,6 @@ SECTIONS
         *(.srodata .srodata.* .srodata*)
         erodata = .;
     }
-
-    . = ALIGN(8);
 
     . = ALIGN(8);
 
@@ -56,7 +59,7 @@ SECTIONS
     .osdebug :
     {
         _osdebug_start = .;
-        . += 8K;
+        . += 20K;
         _osdebug_end = .;
     }
 

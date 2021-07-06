@@ -69,7 +69,7 @@ __restore_sp_from_context_interrupt:
 __restore_sp_from_tcb_interrupt:
     la a0, lazy_old_task
     LOAD a0, 0(a0)
-    jal task_get_kernel_stack_top
+    jal os_task_get_kernel_stack_top
     mv t0, a0
 
 __move_stack_context_interrupt:
@@ -96,6 +96,9 @@ copy_context_loop_interrupt:
     STORE x0, 0(t0)
     STORE sp, 0(a0)
     LOAD  sp, 0(a1)
+
+    mv a0, a1
+    jal os_task_switch_vtable
 
 _interrupt_exit:
     //restore context

@@ -32,6 +32,6 @@ void tick_init()
 
 void tick_isr()
 {
-    kernel_tick();
+    os_tick_handler();
     sbi_set_timer(get_ticks() + tick_cycles);
 }

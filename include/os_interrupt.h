@@ -8,8 +8,8 @@
  * 2021-05-18     lizhirui     the first version
  */
 
-#ifndef __INTERRUPT_H__
-#define __INTERRUPT_H__
+#ifndef __OS_INTERRUPT_H__
+#define __OS_INTERRUPT_H__
 
     #include <dreamos.h>
     

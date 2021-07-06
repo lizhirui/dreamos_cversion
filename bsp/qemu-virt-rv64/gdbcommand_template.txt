@@ -1,0 +1,7 @@
+target remote :1234
+delete 1-10
+b [before_virtual_address_space_entry]
+c
+delete 1
+b main
+

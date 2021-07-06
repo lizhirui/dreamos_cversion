@@ -11,14 +11,15 @@
 #ifndef __OS_MEMORY_H__
 #define __OS_MEMORY_H__
 
-    #include <phypage.h>
-    #include <slub.h>
+    #include <memory/os_memory_page.h>
+    #include <memory/os_memory_slub.h>
 
     void os_memory_init();
+    os_bool_t os_memory_is_initialized();
     void *os_memory_alloc(os_size_t size);
     void os_memory_free(void *mem);
-    os_size_t get_allocated_memory();
-    os_size_t get_total_memory();
-    os_size_t get_free_memory();
+    os_size_t os_get_allocated_memory();
+    os_size_t os_get_total_memory();
+    os_size_t os_get_free_memory();
 
 #endif

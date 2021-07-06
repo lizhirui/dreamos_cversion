@@ -21,5 +21,7 @@
     #define SYNC_INSTRUCTION() do{asm volatile("fence.i");}while(0)
 
     #include "arch_trap.h"
+    #include "arch_mmu.h"
+    #include "arch_syscall.h"
 
 #endif

@@ -15,5 +15,5 @@ void bsp_init();
 void main()
 {
     bsp_init();
-    kernel_init();
+    os_init();
 }

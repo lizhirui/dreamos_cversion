@@ -275,7 +275,7 @@ void print_stacktrace(os_size_t epc,os_size_t fp)
 
     while(1)
     {
-        if((sp >= MEMORY_BASE) && (sp < (MEMORY_BASE + MEMORY_SIZE)))
+        if((!os_mmu_is_preinitialized() && (sp >= MEMORY_BASE) && (sp < (MEMORY_BASE + MEMORY_SIZE))) || (os_mmu_is_preinitialized() && (sp >= OS_MMU_MEMORYMAP_KERNEL_START) && (sp < (OS_MMU_MEMORYMAP_KERNEL_START + MEMORY_SIZE))))
         {
             //os_printf("%d: 0x%p\n",i,sp);
             os_size_t *stack = (os_size_t *)(sp - sizeof(os_size_t) * 2);

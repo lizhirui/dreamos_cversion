@@ -30,6 +30,8 @@
     #define ALIGN_DOWN_MAX(value) ((sizeof(size_t) << 3) - __builtin_clzl(value) - 1)
     #define ALIGN_UP_MIN(value) (IS_POWER_OF_2(value) ? ALIGN_DOWN_MAX(value) : (ALIGN_DOWN_MAX(value) + 1))
 
+    #define DIV_UP(a,b) (((a) + (b) - 1) / (b))
+
     #define MAX(a,b) (((a) > (b)) ? (a) : (b))
     #define MIN(a,b) (((a) < (b)) ? (a) : (b))
 
@@ -49,10 +51,25 @@
 
     typedef size_t os_bool_t;
 
+    typedef size_t os_time_t;
+
+    typedef os_ssize_t (*os_syscall_handler_t)(os_size_t arg0,os_size_t arg1,os_size_t arg2,os_size_t arg3,os_size_t arg4,os_size_t arg5);
+
+    #define OS_SIZE_T_BITS ((sizeof(os_size_t) == 4) ? 5 : ((sizeof(os_size_t) == 8) ? 6 : 0))
+
+    #define OS_NUMBER_MAX(type) (~((type)0))
+
     #define OS_TRUE 1
     #define OS_FALSE 0
 
     #define OS_NULL NULL
+
+    #define OS_BYTE(x) (x)
+    #define OS_KB(x) ((x) * 1024UL)
+    #define OS_MB(x) ((x) * 1024UL * 1024UL)
+    #define OS_GB(x) ((x) * 1024UL * 1024UL * 1024UL)
+
+    #include <os_err.h>
 
     #define OS_ENTER_CRITICAL_AREA() os_bool_t interrupt_state = os_interrupt_disable()
     #define OS_LEAVE_CRITICAL_AREA() os_interrupt_enable(interrupt_state)

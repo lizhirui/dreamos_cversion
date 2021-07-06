@@ -25,6 +25,8 @@
         }                                                                         \
     }while(0)
 
+    #define OS_BUILD_ASSERT(condition) ((void)sizeof(char[1 - 2 * (!(condition))]))
+
     typedef struct os_symtab_header
     {
         os_size_t function_table_offset;

@@ -1,1 +1,7 @@
 target remote :1234
+delete 1-10
+b *0x802000c8
+c
+delete 1
+b main
+

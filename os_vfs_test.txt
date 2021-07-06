@@ -1,0 +1,66 @@
+char buf[OS_VFS_PATH_MAX + 1];
+    os_err_t r;
+
+    os_memset(buf,0,sizeof(buf));
+    r = os_vfs_normalize_path("/",buf);
+    os_printf("r = %d,buf = %s\n",r,buf);
+
+    os_memset(buf,0,sizeof(buf));
+    r = os_vfs_normalize_path("//",buf);
+    os_printf("r = %d,buf = %s\n",r,buf);
+
+    os_memset(buf,0,sizeof(buf));
+    r = os_vfs_normalize_path("/.",buf);
+    os_printf("r = %d,buf = %s\n",r,buf);
+
+    os_memset(buf,0,sizeof(buf));
+    r = os_vfs_normalize_path("/./",buf);
+    os_printf("r = %d,buf = %s\n",r,buf);
+
+    os_memset(buf,0,sizeof(buf));
+    r = os_vfs_normalize_path("/..",buf);
+    os_printf("r = %d,buf = %s\n",r,buf);
+
+    os_memset(buf,0,sizeof(buf));
+    r = os_vfs_normalize_path("/../",buf);
+    os_printf("r = %d,buf = %s\n",r,buf);
+
+    os_memset(buf,0,sizeof(buf));
+    r = os_vfs_normalize_path("/usr/bin/sh",buf);
+    os_printf("r = %d,buf = %s\n",r,buf);
+
+    os_memset(buf,0,sizeof(buf));
+    r = os_vfs_normalize_path("/usr/bin/sh/",buf);
+    os_printf("r = %d,buf = %s\n",r,buf);
+
+    os_memset(buf,0,sizeof(buf));
+    r = os_vfs_normalize_path("/usr/bin/./sh",buf);
+    os_printf("r = %d,buf = %s\n",r,buf);
+
+    os_memset(buf,0,sizeof(buf));
+    r = os_vfs_normalize_path("/usr/bin/./sh/",buf);
+    os_printf("r = %d,buf = %s\n",r,buf);
+
+    os_memset(buf,0,sizeof(buf));
+    r = os_vfs_normalize_path("/usr/bin/../sh",buf);
+    os_printf("r = %d,buf = %s\n",r,buf);
+
+    os_memset(buf,0,sizeof(buf));
+    r = os_vfs_normalize_path("/usr/bin/../sh/",buf);
+    os_printf("r = %d,buf = %s\n",r,buf);
+
+    os_memset(buf,0,sizeof(buf));
+    r = os_vfs_normalize_path("/usr/bin/../../sh",buf);
+    os_printf("r = %d,buf = %s\n",r,buf);
+
+    os_memset(buf,0,sizeof(buf));
+    r = os_vfs_normalize_path("/usr/bin/../../sh/",buf);
+    os_printf("r = %d,buf = %s\n",r,buf);
+
+    os_memset(buf,0,sizeof(buf));
+    r = os_vfs_normalize_path("/usr/bin/../../\\sh",buf);
+    os_printf("r = %d,buf = %s\n",r,buf);
+
+    os_memset(buf,0,sizeof(buf));
+    r = os_vfs_normalize_path("/usr/bin/../../\\sh/",buf);
+    os_printf("r = %d,buf = %s\n",r,buf);

@@ -80,6 +80,25 @@ void trap_handler(os_size_t scause,os_size_t stval,os_size_t sepc,struct TrapFra
         }
     }
 
+    switch(((enum exception_type)SCAUSE_GET_ID(scause)))
+    {
+        case EXCEPTION_LOAD_PAGE_FAULT:
+            if(os_mmu_page_fault_handler(stval,OS_FALSE))
+            {
+                return;
+            }
+
+            break;
+
+        case EXCEPTION_STORE_AMO_PAGE_FAULT:
+            if(os_mmu_page_fault_handler(stval,OS_TRUE))
+            {
+                return;
+            }
+
+            break;
+    }
+
     os_printf("Unhandled %s %ld:%s\n",SCAUSE_IS_INTERRUPT(scause) ? "Interrupt" : "Exception",SCAUSE_GET_ID(scause),get_trap_name(scause));
     os_printf("scause = 0x%p\tstval = 0x%p\tsepc = 0x%p\n\n",scause,stval,sepc);
     os_printf("-----------------------------Dump Registers-----------------------------\n");

@@ -7,3 +7,4 @@
 *.o
 *.bin
 build
+_gsdata_

@@ -28,5 +28,7 @@ arch_task_switch:
 
 _switch_to:
     LOAD sp, (a1)
+    mv a0, a1
+    jal os_task_switch_vtable
     RESTORE_ALL
     sret

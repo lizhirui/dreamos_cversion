@@ -1,0 +1,13 @@
+from building import *
+import os
+
+Import('osconfig')
+
+cwd     = GetCurrentDir()
+src     = Glob('*.c') + Glob('*.cpp') + Glob('*.S')
+CPPPATH = [cwd,os.path.join(cwd,"..","..","include")]
+ASFLAGS = ''
+
+group = DefineGroup('src', src, depend = [''], CPPPATH = CPPPATH, ASFLAGS = ASFLAGS)
+
+Return('group')

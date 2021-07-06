@@ -8,18 +8,23 @@ default: qemu
 kernel:
 	scons
 
-dump:
+dreamos.asm: dreamos.elf
 	scons --dump
+
+dump: dreamos.asm
+
+gdbcommand.txt: gdbcommand_template.txt dreamos.asm
+	python generate_gdbcommand.py
 
 build: kernel
 
 clean:
 	scons -c
 
-qemu: build
+qemu: build dump
 	qemu-system-riscv64 -nographic -machine virt -m 256M -kernel $(bin)
 
-qemu-dbg: build
+qemu-dbg: build dump gdbcommand.txt
 	qemu-system-riscv64 -s -S -nographic -machine virt -m 256M -kernel $(bin)
 
 run: qemu

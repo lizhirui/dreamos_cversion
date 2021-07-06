@@ -152,7 +152,7 @@ static void *_alloc(os_size_t order)
 }
 
 //页面分配（其大小为2的幂，且>=size）
-void *phypage_alloc(os_size_t size)
+void *os_memory_page_alloc(os_size_t size)
 {
     return _alloc(os_size_to_order(size));
 }
@@ -185,7 +185,7 @@ static void _free(void *addr,os_size_t old_order)
 }
 
 //页面释放
-void phypage_free(void *addr)
+void os_memory_page_free(void *addr)
 {
     OS_ENTER_CRITICAL_AREA();
     page_metainfo_t *page = addr_to_page_metainfo((os_size_t)addr);
@@ -194,46 +194,46 @@ void phypage_free(void *addr)
 }
 
 //获取已分配的页面数量
-os_size_t get_allocated_page_count()
+os_size_t os_memory_page_get_allocated_page_count()
 {
     return page_allocated;
 }
 
 //获取总页面数量
-os_size_t get_total_page_count()
+os_size_t os_memory_page_get_total_page_count()
 {
     return (page_memory_end - page_memory_start) >> PAGE_BITS;
 }
 
 //获取空闲页面数量
-os_size_t get_free_page_count()
+os_size_t os_memory_page_get_free_page_count()
 {
-    return get_total_page_count() - get_allocated_page_count();
+    return os_memory_page_get_total_page_count() - os_memory_page_get_allocated_page_count();
 }
 
-static void phypage_test()
+static void page_test()
 {
-    void *mem1 = phypage_alloc(131072);
+    void *mem1 = os_memory_page_alloc(131072);
     os_printf("mem1 = 0x%p\n",mem1);
-    void *mem2 = phypage_alloc(4096);
+    void *mem2 = os_memory_page_alloc(4096);
     os_printf("mem2 = 0x%p\n",mem2);
-    void *mem3 = phypage_alloc(4096);
+    void *mem3 = os_memory_page_alloc(4096);
     os_printf("mem3 = 0x%p\n",mem3);
-    phypage_free(mem1);
-    void *mem4 = phypage_alloc(131072);
+    os_memory_page_free(mem1);
+    void *mem4 = os_memory_page_alloc(131072);
     os_printf("mem4 = 0x%p\n",mem4);
-    phypage_free(mem2);
-    phypage_free(mem3);
-    phypage_free(mem4);
+    os_memory_page_free(mem2);
+    os_memory_page_free(mem3);
+    os_memory_page_free(mem4);
     OS_ASSERT(page_allocated == 0);
 }
 
 //buddy system初始化函数
-void phypage_init()
+void os_memory_page_init()
 {
     os_size_t heap_start = (os_size_t)&_heap_start;
-    os_size_t mem_start = ALIGN_UP(heap_start,PAGE_SIZE);
-    os_size_t mem_end = ALIGN_DOWN(MEMORY_BASE + MEMORY_SIZE,PAGE_SIZE);
+    os_size_t mem_start = ALIGN_UP(heap_start,OS_MMU_PAGE_SIZE);
+    os_size_t mem_end = ALIGN_DOWN(OS_MMU_MEMORYMAP_KERNEL_START + MEMORY_SIZE,OS_MMU_PAGE_SIZE);
     os_size_t mem_size = mem_end - mem_start;
     os_printf("memory layout:\nmem_start = 0x%p\nmem_end = 0x%p\nmem_size = 0x%p\n",mem_start,mem_end,mem_size);
 
@@ -248,13 +248,13 @@ void phypage_init()
 
     page_metainfo_bits_aligned = ALIGN_UP_MIN(sizeof(page_metainfo_t));
     os_size_t meta_size = SIZE(page_metainfo_bits_aligned);
-    os_size_t page_size = PAGE_SIZE;
+    os_size_t page_size = OS_MMU_PAGE_SIZE;
     os_size_t page_num = mem_size / (meta_size + page_size);
     page_metainfo_start = mem_start;
     page_metainfo_end = page_metainfo_start + (page_num << page_metainfo_bits_aligned);
-    page_memory_start = ALIGN_UP(page_metainfo_end,PAGE_SIZE);
+    page_memory_start = ALIGN_UP(page_metainfo_end,OS_MMU_PAGE_SIZE);
     page_memory_end = page_memory_start + (page_num << PAGE_BITS);
-    os_printf("phypage layout:\nmeta_size = %ld\npage_size = %ld\npage_num = %ld\n",meta_size,page_size,page_num);
+    os_printf("Page Layout:\nmeta_size = %ld\npage_size = %ld\npage_num = %ld\n",meta_size,page_size,page_num);
     os_printf("page_metainfo_start = 0x%p\npage_metainfo_end = 0x%p\npage_memory_start = 0x%p\npage_memory_end = 0x%p\n",page_metainfo_start,page_metainfo_end,page_memory_start,page_memory_end);
 
     for(i = 0;i < page_num;i++)
@@ -292,6 +292,6 @@ void phypage_init()
 
     OS_ASSERT(page_allocated == 0);
     SYNC_DATA();
-    phypage_test();
-    phypage_test();
+    //page_test();
+    //page_test();
 }

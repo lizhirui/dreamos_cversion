@@ -34,15 +34,24 @@ static void print_system_info()
     os_printf("\n");
 }
 
-//内核初始化函数，也是内核入口
-void kernel_init()
+static inline void os_build_check()
 {
+    OS_BUILD_ASSERT(OS_SIZE_T_BITS != 0);
+}
+
+//内核初始化函数，也是内核入口
+void os_init()
+{
+    os_build_check();
     bsp_early_init();
     print_system_info();
     os_memory_init();
+    os_mmu_init();
     bsp_after_heap_init();
-    task_scheduler_init();
+    os_vfs_init();
+    os_task_scheduler_init();
     bsp_after_task_scheduler_init();
-    task_scheduler_start();
+    os_task_scheduler_start();
+    
     while(1);
 }
