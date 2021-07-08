@@ -9,6 +9,7 @@
  * 2021-07-06     lizhirui     add arch error
  */
 
+// @formatter:off
 #ifndef __OS_ERR_H__
 #define __OS_ERR_H__
 
@@ -54,8 +55,9 @@
     
     #include <arch_err.h>
 
-    #define OS_ERR_RETURN_ERROR(condition,errorcode) do{if((condition)){return (errorcode);}}while(0)
-    #define OS_ERR_SET_ERROR_AND_GOTO(condition,variable,errorcode,label) do{if((condition)){variable = (errorcode);goto label;}}while(0)
-    #define OS_ERR_GET_ERROR_AND_GOTO(expression,variable,label) do{if((variable = (expression)) != OS_ERR_OK){goto label;}}while(0)
+    #define OS_ERR_RETURN_ERROR(condition,errorcode) do{OS_BUILD_ASSERT((errorcode) <= 0);if((condition)){return (errorcode);}}while(0)
+    #define OS_ERR_SET_ERROR_AND_GOTO(condition,variable,errorcode,label) do{OS_BUILD_ASSERT((errorcode) <= 0);if((condition)){variable = (errorcode);goto label;}}while(0)
+    #define OS_ERR_GET_ERROR_AND_GOTO(expression,variable,label) do{if((variable = (expression)) < OS_ERR_OK){goto label;}}while(0)
+    #define OS_ERR_GET_ERROR_AND_RETURN(expression) do{os_err_t err;if((err = (expression)) < OS_ERR_OK){return err;}}while(0)
 
 #endif

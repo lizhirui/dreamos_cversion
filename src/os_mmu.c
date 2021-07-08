@@ -9,6 +9,7 @@
  * 2021-07-05     lizhirui     add io mapping support
  */
 
+// @formatter:off
 #include <dreamos.h>
 
 static os_bool_t os_mmu_initialized = OS_FALSE;
@@ -46,15 +47,38 @@ void os_mmu_remove_io_mapping(os_mmu_vtable_p vtable,void *va,os_size_t size)
     //os_bitmap_set_bits(&vtable -> va_bitmap,va_n,size >> OS_MMU_OFFSET_BITS,1);
 }
 
+os_err_t os_mmu_create_mapping_auto(os_mmu_vtable_p vtable,os_size_t va,os_size_t size,os_mmu_pt_prot_t prot)
+{
+    size = ALIGN_UP(size,OS_MMU_PAGE_SIZE);
+    va = ALIGN_DOWN(va,OS_MMU_PAGE_SIZE);
+    os_err_t ret;
+
+    while(size)
+    {
+        void *mem = os_memory_alloc(OS_MMU_PAGE_SIZE);
+        OS_ERR_RETURN_ERROR(mem == OS_NULL,-OS_ERR_ENOMEM);
+        os_size_t pa = OS_MMU_VA_TO_PA((os_size_t)mem);
+
+        if((ret = os_mmu_create_mapping(vtable,va,pa,size,prot)) != OS_ERR_OK)
+        {
+            os_memory_free(mem);
+            return ret;
+        }
+
+        size -= OS_MMU_PAGE_SIZE;
+    }
+
+    return OS_ERR_OK;
+}
+
 os_bool_t os_mmu_is_initialized()
 {
     return os_mmu_initialized;
 }
 
-void os_mmu_vtable_create(os_mmu_vtable_p vtable,os_mmu_pt_l1_p l1_vtable,os_size_t va_start,os_size_t va_size)
+os_err_t os_mmu_vtable_create(os_mmu_vtable_p vtable,os_mmu_pt_l1_p l1_vtable,os_size_t va_start,os_size_t va_size)
 {
     OS_ASSERT(vtable != OS_NULL);
-    OS_ASSERT(l1_vtable != OS_NULL);
     OS_ASSERT(va_size != 0);
 
     vtable -> allocated = l1_vtable == OS_NULL;
@@ -66,7 +90,12 @@ void os_mmu_vtable_create(os_mmu_vtable_p vtable,os_mmu_pt_l1_p l1_vtable,os_siz
     if(vtable -> allocated)
     {
         vtable -> l1_vtable = os_memory_alloc(OS_MMU_L1_PAGES * OS_MMU_PAGE_SIZE);
-        OS_ASSERT(vtable -> l1_vtable);
+
+        if(vtable -> l1_vtable == OS_NULL)
+        {
+            os_memset(vtable,0,sizeof(*vtable));
+            return -OS_ERR_ENOMEM;
+        }
     }
     else
     {
@@ -74,6 +103,7 @@ void os_mmu_vtable_create(os_mmu_vtable_p vtable,os_mmu_pt_l1_p l1_vtable,os_siz
     }
 
     os_memset((void *)vtable -> l1_vtable,0,OS_MMU_L1_PAGES * OS_MMU_PAGE_SIZE);
+    return OS_ERR_OK;
 }
 
 /*
@@ -85,7 +115,7 @@ void os_mmu_vtable_bitmap_init(os_mmu_vtable_p vtable,void *memory)
     vtable -> bitmap_initialized = OS_TRUE;
 }*/
 
-void os_mmu_vtable_remove(os_mmu_vtable_p vtable)
+void os_mmu_vtable_remove(os_mmu_vtable_p vtable,os_bool_t remove_mapping)
 {
     OS_ASSERT(vtable != OS_NULL);
 
@@ -95,6 +125,11 @@ void os_mmu_vtable_remove(os_mmu_vtable_p vtable)
         os_bitmap_remove(&vtable -> va_bitmap);
         vtable -> bitmap_initialized = OS_FALSE;
     }*/
+
+    if(remove_mapping)
+    {
+        os_mmu_remove_all_mapping(vtable);
+    }
 
     if(vtable -> allocated)
     {
@@ -127,13 +162,13 @@ os_mmu_vtable_p os_mmu_get_current_vtable()
     return current_vtable;
 }
 
-os_bool_t arch_mmu_io_mapping_copy(os_mmu_vtable_p vtable);
+os_bool_t os_mmu_io_mapping_copy(os_mmu_vtable_p vtable);
 
 os_bool_t os_mmu_page_fault_handler(os_size_t addr,os_bool_t write)
 {
     if(addr >= OS_MMU_MEMORYMAP_IO_START)
     {
-        return arch_mmu_io_mapping_copy(current_vtable);
+        return os_mmu_io_mapping_copy(current_vtable);
     }
 
     return OS_FALSE;

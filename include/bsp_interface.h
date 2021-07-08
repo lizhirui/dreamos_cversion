@@ -8,6 +8,7 @@
  * 2021-05-18     lizhirui     the first version
  */
 
+// @formatter:off
 #ifndef __BSP_INTERFACE_H__
 #define __BSP_INTERRUPT_H__
 

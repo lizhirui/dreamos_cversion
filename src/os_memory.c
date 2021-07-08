@@ -9,6 +9,7 @@
  * 2021-06-02     lizhirui     add slub interface support
  */
 
+// @formatter:off
 #include <dreamos.h>
 
 static os_bool_t os_memory_initialized = OS_FALSE;

@@ -8,6 +8,7 @@
  * 2021-07-06     lizhirui     the first version
  */
 
+// @formatter:off
 #include <dreamos.h>
 
 static inline os_bool_t romfs_check_dirent(os_vfs_romfs_dirent_p dirent)

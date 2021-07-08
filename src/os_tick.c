@@ -9,6 +9,7 @@
  * 2021-07-06     lizhirui     add global tick
  */
 
+// @formatter:off
 #include <dreamos.h>
 
 static os_size_t global_tick = 0;

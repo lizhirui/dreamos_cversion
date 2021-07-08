@@ -9,6 +9,7 @@
  * 2021-07-06     lizhirui     add finer-grained lock
  */
 
+// @formatter:off
 #include <dreamos.h>
 
 static os_list_node_t os_file_list;

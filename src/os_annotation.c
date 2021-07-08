@@ -8,6 +8,7 @@
  * 2021-06-20     lizhirui     the first version
  */
 
+// @formatter:off
 #include <dreamos.h>
 
 void os_annotation_handler(const char *ex_string,const char *func,os_size_t line,const char *error_msg)

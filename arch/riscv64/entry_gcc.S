@@ -114,3 +114,9 @@ enter_virtual_address_space:
     ld s2, 16(sp)
     addi sp, sp, 24
     ret
+
+    .global enter_user_space
+enter_user_space:
+    csrci sstatus, 8//set sstatus.spp = 0
+    csrw sepc, a0
+    sret

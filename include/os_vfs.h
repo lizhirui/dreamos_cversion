@@ -8,12 +8,11 @@
  * 2021-07-05     lizhirui     the first version
  */
 
+// @formatter:off
 #ifndef __OS_VFS_H__
 #define __OS_VFS_H__
 
     #include <dreamos.h>
-
-    #define OS_VFS_PATH_MAX 255
 
     typedef struct os_vfs os_vfs_t,*os_vfs_p;
     typedef struct os_vfs_mp os_vfs_mp_t,*os_vfs_mp_p;

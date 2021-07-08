@@ -8,6 +8,7 @@
  * 2021-06-18     lizhirui     the first version
  */
 
+// @formatter:off
 #ifndef __OS_TERMINAL_COLOR_H__
 #define __OS_TERMINAL_COLOR_H__
 

@@ -9,6 +9,7 @@
  * 2021-05-20     lizhirui     add os debug support
  */
 
+// @formatter:off
 #ifndef __OS_DEBUG_H__
 #define __OS_DEBUG_H__
 

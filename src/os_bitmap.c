@@ -6,8 +6,11 @@
  * Change Logs:
  * Date           Author       Notes
  * 2021-07-04     lizhirui     the first version
+ * 2021-07-05     lizhirui     fix a bug of find some ones and zeros
+ * 2021-07-08     lizhirui     modified the result value type of os_bitmap_create and fix a bug of os_bitmap_create memset size
  */
 
+// @formatter:off
 #include <dreamos.h>
 
 #define GROUP_BITS OS_SIZE_T_BITS
@@ -15,7 +18,7 @@
 #define GROUP_ID(x) ((x) >> GROUP_BITS)
 #define INDEX_ID(x) MASK_VALUE(x,MASK(GROUP_BITS))
 
-void os_bitmap_create(os_bitmap_p bitmap,os_size_t size,void *memory,os_size_t default_value)
+os_err_t os_bitmap_create(os_bitmap_p bitmap,os_size_t size,void *memory,os_size_t default_value)
 {
     OS_ASSERT(bitmap != OS_NULL);
     OS_ASSERT(size != 0);
@@ -28,14 +31,15 @@ void os_bitmap_create(os_bitmap_p bitmap,os_size_t size,void *memory,os_size_t d
     if(bitmap -> allocated)
     {
         bitmap -> memory = os_memory_alloc(bitmap -> capacity / (sizeof(os_size_t) << 3));
-        OS_ASSERT(bitmap -> memory);
+        OS_ERR_RETURN_ERROR(bitmap -> memory == OS_NULL,-OS_ERR_ENOMEM);
     }
     else
     {
         bitmap -> memory = memory;
     }
 
-    os_memset((void *)bitmap -> memory,default_value ? 0xFF : 0,bitmap -> capacity);
+    os_memset((void *)bitmap -> memory,default_value ? 0xFF : 0,bitmap -> capacity >> 3);
+    return OS_ERR_OK;
 }
 
 void os_bitmap_remove(os_bitmap_p bitmap)
@@ -112,6 +116,8 @@ os_size_t os_bitmap_find_some_ones(os_bitmap_p bitmap,os_size_t start_id,os_size
             remainedcount = count;
             ret = i + 1;
         }
+
+        i++;
     }
 
     return OS_NUMBER_MAX(os_size_t);
@@ -158,6 +164,8 @@ os_size_t os_bitmap_find_some_zeros(os_bitmap_p bitmap,os_size_t start_id,os_siz
             remainedcount = count;
             ret = i + 1;
         }
+
+        i++;
     }
 
     return OS_NUMBER_MAX(os_size_t);

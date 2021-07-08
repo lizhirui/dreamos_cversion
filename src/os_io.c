@@ -8,6 +8,7 @@
  * 2021-05-18     lizhirui     the first version
  */
 
+// @formatter:off
 //This file references some codes of kservice of rt-thread
 
 #include <dreamos.h>

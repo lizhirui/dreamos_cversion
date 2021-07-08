@@ -8,6 +8,7 @@
  * 2021-07-04     lizhirui     the first version
  */
 
+// @formatter:off
 #ifndef __OS_BITMAP_H__
 #define __OS_BITMAP_H__
 
@@ -21,7 +22,7 @@
         os_bool_t allocated;
     }os_bitmap_t,*os_bitmap_p;
 
-    void os_bitmap_create(os_bitmap_p bitmap,os_size_t size,void *memory,os_size_t default_value);
+    os_err_t os_bitmap_create(os_bitmap_p bitmap,os_size_t size,void *memory,os_size_t default_value);
     void os_bitmap_remove(os_bitmap_p bitmap);
     os_size_t os_bitmap_get_bit(os_bitmap_p bitmap,os_size_t id);
     void os_bitmap_set_bit(os_bitmap_p bitmap,os_size_t id,os_size_t value);

@@ -8,6 +8,7 @@
  * 2021-05-18     lizhirui     the first version
  */
 
+// @formatter:off
 #ifndef __OS_DEF_H__
 #define __OS_DEF_H__
 
@@ -37,6 +38,8 @@
 
     #define ADDR_OFFSET(addr,offset) ((void *)(((size_t)(addr)) + ((size_t)(offset))))
 
+    #define OS_NORETURN _Noreturn
+
     typedef uint8_t os_uint8_t;
     typedef uint16_t os_uint16_t;
     typedef uint32_t os_uint32_t;
@@ -52,8 +55,6 @@
     typedef size_t os_bool_t;
 
     typedef size_t os_time_t;
-
-    typedef os_ssize_t (*os_syscall_handler_t)(os_size_t arg0,os_size_t arg1,os_size_t arg2,os_size_t arg3,os_size_t arg4,os_size_t arg5);
 
     #define OS_SIZE_T_BITS ((sizeof(os_size_t) == 4) ? 5 : ((sizeof(os_size_t) == 8) ? 6 : 0))
 

@@ -8,6 +8,7 @@
  * 2021-07-05     lizhirui     the first version
  */
 
+// @formatter:off
 #include <dreamos.h>
 
 void os_mutex_init(os_mutex_p mutex)
@@ -20,7 +21,7 @@ void os_mutex_init(os_mutex_p mutex)
 
 void os_mutex_lock(os_mutex_p mutex)
 {
-    OS_ANNOTATION_NEED_THREAD_CONTEXT();
+    OS_ANNOTATION_NEED_TASK_CONTEXT();
     OS_ENTER_CRITICAL_AREA();
 
     if(mutex -> locked)
@@ -46,7 +47,7 @@ void os_mutex_lock(os_mutex_p mutex)
 
 void os_mutex_unlock(os_mutex_p mutex)
 {
-    OS_ANNOTATION_NEED_THREAD_CONTEXT();
+    OS_ANNOTATION_NEED_TASK_CONTEXT();
     OS_ENTER_CRITICAL_AREA();
     OS_ASSERT(mutex -> owner == os_task_get_current_task());
     OS_ASSERT(mutex -> locked);

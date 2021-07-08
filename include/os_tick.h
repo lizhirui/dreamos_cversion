@@ -8,6 +8,7 @@
  * 2021-07-06     lizhirui     the first version
  */
 
+// @formatter:off
 #ifndef __OS_TICK_H__
 #define __OS_TICK_H__
 

@@ -1,4 +1,4 @@
-.PHONY: kernel dump qemu run qemu-dbg dbg gdb
+.PHONY: kernel root dump build clean qemu qemu-dbg run dbg gdb
 
 kernel_elf := dreamos.elf
 bin := dreamos.bin
@@ -7,6 +7,9 @@ default: qemu
 
 kernel:
 	scons
+
+root:
+	python ../../tools/mkromfs.py userdir/root src/romfs_data.c
 
 dreamos.asm: dreamos.elf
 	scons --dump

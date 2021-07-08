@@ -8,6 +8,7 @@
  * 2021-07-05     lizhirui     the first version
  */
 
+// @formatter:off
 #include <dreamos.h>
 
 static os_list_node_t device_list;

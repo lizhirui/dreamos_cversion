@@ -8,6 +8,7 @@
  * 2021-05-18     lizhirui     the first version
  */
 
+// @formatter:off
 #include <dreamos.h>
 
 os_size_t os_strlen(const char *str)

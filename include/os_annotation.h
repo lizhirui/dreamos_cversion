@@ -1,3 +1,14 @@
+/*
+ * Copyright lizhirui
+ *
+ * SPDX-License-Identifier: Apache-2.0
+ *
+ * Change Logs:
+ * Date           Author       Notes
+ * 2021-06-19     lizhirui     the first version
+ */
+
+// @formatter:off
 #ifndef __OS_ANNOTATION_H__
 #define __OS_ANNOTATION_H__
 
@@ -15,7 +26,7 @@
     }while(0)
 
     #define OS_ANNOTATION_NOT_IMPLEMENT() OS_ANNOTATION(OS_FALSE,"This function isn't implemented!")
-    #define OS_ANNOTATION_NEED_THREAD_CONTEXT() OS_ANNOTATION((!os_is_in_interrupt()) && (os_task_scheduler_is_initialized()) && (os_task_get_current_task() != OS_NULL),"This function must be called in thread context!")
+    #define OS_ANNOTATION_NEED_TASK_CONTEXT() OS_ANNOTATION((!os_is_in_interrupt()) && (os_task_scheduler_is_initialized()) && (os_task_get_current_task() != OS_NULL),"This function must be called in thread context!")
     #define OS_ANNOTATION_NEED_NON_INTERRUPT_CONTEXT() OS_ANNOTATION(!os_is_in_interrupt(),"This function can't be called in interrupt context!")
     #define OS_ANNOTATION_NEED_INTERRUPT_CONTEXT() OS_ANNOTATION(os_is_in_interrupt(),"This function must be called in interrupt context!")
     #define OS_ANNOTATION_NEED_DYNAMIC_MEMORY() OS_ANNOTATION(os_memory_is_initialized(),"This function can't be called until dynamic memory system is initialized correctly!")

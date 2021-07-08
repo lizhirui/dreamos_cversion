@@ -8,6 +8,7 @@
  * 2021-05-18     lizhirui     the first version
  */
 
+// @formatter:off
 #include <dreamos.h>
 
 typedef struct page_metainfo

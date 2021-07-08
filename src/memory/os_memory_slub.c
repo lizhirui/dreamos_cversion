@@ -9,6 +9,7 @@
  * 2021-07-06     lizhirui     fix a slub_page_init bug that page -> object_total_nr is wrong
  */
 
+// @formatter:off
 #include <dreamos.h>
 
 static os_memory_slub_cache_t os_memory_slub_cache[OS_MEMORY_SLUB_MAX_ORDER + 1]; 

@@ -8,6 +8,7 @@
  * 2021-06-02     lizhirui     the first version
  */
 
+// @formatter:off
 #ifndef __OS_MEMORY_SLUB_H__
 #define __OS_MEMORY_SLUB_H__
 

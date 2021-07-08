@@ -8,6 +8,7 @@
  * 2021-07-05     lizhirui     the first version
  */
 
+// @formatter:off
 #ifndef __OS_WAITQUEUE_H__
 #define __OS_WAITQUEUE_H__
 

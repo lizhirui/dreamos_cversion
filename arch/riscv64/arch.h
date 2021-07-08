@@ -8,6 +8,7 @@
  * 2021-05-18     lizhirui     the first version
  */
 
+// @formatter:off
 #ifndef __ARCH_H__
 #define __ARCH_H__
 

@@ -1,7 +1,16 @@
+/*
+ * Copyright lizhirui
+ *
+ * SPDX-License-Identifier: Apache-2.0
+ *
+ * Change Logs:
+ * Date           Author       Notes
+ * 2021-07-06     lizhirui     the first version
+ */
+
+// @formatter:off
 #ifndef __ARCH_SYSCALL_H__
 #define __ARCH_SYSCALL_H__
-
-    #include <dreamos.h>
 
     #define __NR_io_setup 0
     #define __NR_io_destroy 1

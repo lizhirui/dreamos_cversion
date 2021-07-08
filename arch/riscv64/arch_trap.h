@@ -8,6 +8,7 @@
  * 2021-05-18     lizhirui     the first version
  */
 
+// @formatter:off
 #ifndef __ARCH_TRAP_H__
 #define __ARCH_TRAP_H__
 

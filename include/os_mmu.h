@@ -8,6 +8,7 @@
  * 2021-05-18     lizhirui     the first version
  */
 
+// @formatter:off
 #ifndef __OS_MMU_H__
 #define __OS_MMU_H__
 
@@ -19,6 +20,7 @@
     #endif
 
     #define OS_MMU_PAGE_SIZE SIZE(OS_MMU_OFFSET_BITS)
+    #define OS_MMU_PAGE_OFFSET(addr) MASK_VALUE(addr,MASK(OS_MMU_OFFSET_BITS))
 
     #if OS_MMU_PAGETABLE_LEVEL_NUM == 4
         #define OS_MMU_L4_SHIFT OS_MMU_OFFSET_BITS
@@ -87,7 +89,7 @@
     #endif
 
     #if (OS_MMU_MEMORYMAP_KERNEL_START + OS_MMU_MEMORYMAP_KERNEL_SIZE) > OS_MMU_MEMORYMAP_IO_START
-        #error "Kernel memory is overlapping with io memory!"
+        #error "Kernel memory is overlapping with io memory!"??
     #endif
 
     #define OS_MMU_PA_TO_VA(pa) ((pa) + OS_MMU_KERNEL_VA_PA_OFFSET)
@@ -103,12 +105,14 @@
         os_bool_t allocated;
         os_size_t refcnt;
     }os_mmu_vtable_t,*os_mmu_vtable_p;
-    
-    void os_mmu_vtable_create(os_mmu_vtable_p vtable,os_mmu_pt_l1_p l1_vtable,os_size_t va_start,os_size_t va_size);
+
+    os_err_t os_mmu_vtable_create(os_mmu_vtable_p vtable,os_mmu_pt_l1_p l1_vtable,os_size_t va_start,os_size_t va_size);
     //void os_mmu_vtable_bitmap_init(os_mmu_vtable_p vtable,void *memory);
-    void os_mmu_vtable_remove(os_mmu_vtable_p vtable);
+    void os_mmu_vtable_remove(os_mmu_vtable_p vtable,os_bool_t remove_mapping);
     os_err_t os_mmu_create_mapping(os_mmu_vtable_p vtable,os_size_t va,os_size_t pa,os_size_t size,os_mmu_pt_prot_t prot);
     os_err_t os_mmu_remove_mapping(os_mmu_vtable_p vtable,os_size_t va,os_size_t size);
+    os_err_t os_mmu_create_mapping_auto(os_mmu_vtable_p vtable,os_size_t va,os_size_t size,os_mmu_pt_prot_t prot);
+    void *os_mmu_user_va_to_kernel_va(os_mmu_vtable_p vtable,os_size_t user_va);
     os_size_t os_mmu_find_vaddr(os_mmu_vtable_p vtable,os_size_t va_start,os_size_t size);
     void os_mmu_remove_all_mapping(os_mmu_vtable_p vtable);
     void os_mmu_switch(os_mmu_vtable_p vtable);
@@ -122,5 +126,8 @@
     void os_mmu_init();
     void *os_mmu_create_io_mapping(os_mmu_vtable_p vtable,os_size_t pa,os_size_t size);
     void os_mmu_remove_io_mapping(os_mmu_vtable_p vtable,void *va,os_size_t size);
+    os_bool_t os_mmu_io_mapping_copy(os_mmu_vtable_p vtable);
+    os_err_t os_mmu_kernel_mapping_copy(os_mmu_vtable_p vtable);
+    os_err_t os_mmu_user_mapping_copy(os_mmu_vtable_p dst_vtable,os_mmu_vtable_p src_vtable);
 
 #endif

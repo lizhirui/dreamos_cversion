@@ -8,9 +8,9 @@
  * 2021-05-18     lizhirui     the first version
  */
 
+// @formatter:off
 #ifndef __DREAMOS_H__
 #define __DREAMOS_H__
-
     #include <stdlib.h>
     #include <stdint.h>
     #include <stdarg.h>
@@ -18,6 +18,8 @@
 
     #include <osconfig.h>
     #include <os_def.h>
+
+    #include <os_elf.h>
     
     #include <os_io.h>
     #include <os_tick.h>
@@ -31,6 +33,7 @@
     #include <os_mmu.h>
     #include <os_list.h>
     #include <os_bitmap.h>
+    #include <os_hashmap.h>
     #include <os_task.h>
     #include <os_interrupt.h>
     #include <os_waitqueue.h>

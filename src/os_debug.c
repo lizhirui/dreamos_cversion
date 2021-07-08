@@ -9,6 +9,7 @@
  * 2021-05-20     lizhirui     add os debug support
  */
 
+// @formatter:off
 #include <dreamos.h>
 
 //用于内核断言支持

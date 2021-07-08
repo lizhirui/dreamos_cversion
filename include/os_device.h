@@ -8,6 +8,7 @@
  * 2021-07-05     lizhirui     the first version
  */
 
+// @formatter:off
 #ifndef __OS_DEVICE_H__
 #define __OS_DEVICE_H__
 

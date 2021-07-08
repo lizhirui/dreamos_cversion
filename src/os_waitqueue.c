@@ -8,6 +8,7 @@
  * 2021-07-05     lizhirui     the first version
  */
 
+// @formatter:off
 #include <dreamos.h>
 
 void os_waitqueue_add(os_waitqueue_p waitqueue,os_waitqueue_node_p node)
@@ -26,7 +27,7 @@ void os_waitqueue_remove(os_waitqueue_node_p node)
 
 void os_waitqueue_wait(os_waitqueue_p waitqueue)
 {
-    OS_ANNOTATION_NEED_THREAD_CONTEXT();
+    OS_ANNOTATION_NEED_TASK_CONTEXT();
     os_waitqueue_node_t node;
     node.task = os_task_get_current_task();
     os_waitqueue_add(waitqueue,&node);

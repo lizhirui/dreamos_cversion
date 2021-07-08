@@ -1,0 +1,87 @@
+cmake_minimum_required(VERSION 3.19)
+project(dreamos C)
+
+set(CMAKE_C_STANDARD 11)
+
+include_directories(D:/ToolsData/wsl/Ubuntu2004/rootfs/home/lizhirui/workspace/riscv64-toolchains/riscv64-unknown-elf/include)
+include_directories(arch)
+include_directories(arch/riscv64)
+include_directories(bsp/qemu-virt-rv64)
+include_directories(bsp/qemu-virt-rv64/src)
+include_directories(firmware)
+include_directories(firmware/sbi)
+include_directories(include)
+include_directories(include/device)
+include_directories(include/memory)
+include_directories(include/vfs)
+
+add_executable(dreamos
+        arch/riscv64/arch.c
+        arch/riscv64/arch.h
+        arch/riscv64/arch_err.h
+        arch/riscv64/arch_mmu.c
+        arch/riscv64/arch_mmu.h
+        arch/riscv64/arch_syscall.c
+        arch/riscv64/arch_syscall.h
+        arch/riscv64/arch_trap.c
+        arch/riscv64/arch_trap.h
+        arch/riscv64/encoding.h
+        arch/riscv64/stackframe.h
+        bsp/qemu-virt-rv64/src/bsp.h
+        bsp/qemu-virt-rv64/src/bsp_init.c
+        bsp/qemu-virt-rv64/src/bsp_interface.c
+        bsp/qemu-virt-rv64/src/entry_main.c
+        bsp/qemu-virt-rv64/src/task_main_entry.c
+        bsp/qemu-virt-rv64/src/tick.c
+        bsp/qemu-virt-rv64/src/tick.h
+        bsp/qemu-virt-rv64/src/trap_handler.c
+        bsp/qemu-virt-rv64/osconfig.h
+        firmware/sbi/firmware.h
+        firmware/sbi/sbi.h
+        include/device/os_chardevice.h
+        include/memory/os_memory_page.h
+        include/memory/os_memory_slub.h
+        include/vfs/os_vfs_romfs.h
+        include/bsp_interface.h
+        include/dreamos.h
+        include/os_annotation.h
+        include/os_bitmap.h
+        include/os_debug.h
+        include/os_def.h
+        include/os_device.h
+        include/os_err.h
+        include/os_file.h
+        include/os_interrupt.h
+        include/os_io.h
+        include/os_list.h
+        include/os_memory.h
+        include/os_mmu.h
+        include/os_mutex.h
+        include/os_string.h
+        include/os_syscall.h
+        include/os_task.h
+        include/os_terminal_color.h
+        include/os_tick.h
+        include/os_vfs.h
+        include/os_waitqueue.h
+        src/memory/os_memory_page.c
+        src/memory/os_memory_slub.c
+        src/vfs/os_vfs_romfs.c
+        src/os_annotation.c
+        src/os_bitmap.c
+        src/os_debug.c
+        src/os_device.c
+        src/os_file.c
+        src/os_init.c
+        src/os_interrupt.c
+        src/os_io.c
+        src/os_memory.c
+        src/os_mmu.c
+        src/os_mutex.c
+        src/os_string.c
+        src/os_syscall.c
+        src/os_task.c
+        src/os_terminal_color.c
+        src/os_tick.c
+        src/os_vfs.c
+        src/os_waitqueue.c src/os_hashmap.c include/os_hashmap.h include/os_elf.h src/os_elf.c)

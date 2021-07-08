@@ -1,3 +1,4 @@
+// @formatter:off
 #ifndef __OSCONFIG_H__
 #define __OSCONFIG_H__
 
@@ -12,7 +13,13 @@
     #define MAIN_TASK_STACK_SIZE (16384)
     #define MAIN_TASK_PRIORITY (10)
     #define MAIN_TASK_TICK_INIT (1)
+    #define OS_VFS_PATH_MAX (255)
+    #define OS_TASK_MAX_NUM (65536)
 
     #define SLUB_MIN_PARTIAL (2)
+
+    #define OS_MAX_OPEN_FILES (128)
+
+    #define OS_ARCH64
 
 #endif

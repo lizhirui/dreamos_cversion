@@ -8,6 +8,7 @@
  * 2021-06-18     lizhirui     the first version
  */
 
+// @formatter:off
 #include <dreamos.h>
 
 void terminal_color_set_fg(terminal_color_t color)

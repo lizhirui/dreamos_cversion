@@ -8,6 +8,7 @@
  * 2021-07-06     lizhirui     the first version
  */
 
+// @formatter:off
 #ifndef __OS_VFS_ROMFS_H__
 #define __OS_VFS_ROMFS_H__
 

@@ -9,6 +9,7 @@
  * 2021-05-20     lizhirui     add os debug support
  */
 
+// @formatter:off
 #include <dreamos.h>
 #include <encoding.h>
 
@@ -101,7 +102,15 @@ void trap_handler(os_size_t scause,os_size_t stval,os_size_t sepc,struct TrapFra
 
     os_printf("Unhandled %s %ld:%s\n",SCAUSE_IS_INTERRUPT(scause) ? "Interrupt" : "Exception",SCAUSE_GET_ID(scause),get_trap_name(scause));
     os_printf("scause = 0x%p\tstval = 0x%p\tsepc = 0x%p\n\n",scause,stval,sepc);
-    os_printf("-----------------------------Dump Registers-----------------------------\n");
+    os_task_p task = os_task_get_current_task();
+    os_printf("Current Context:%s\n",os_is_in_interrupt() ? "Interrupt" : ((task == OS_NULL) ? "Boot" : "Task"));
+
+    if(task != OS_NULL)
+    {
+        os_printf("Current Task:pid = %d,name = %s,addr = 0x%p\n",task -> pid,task -> name,task);
+    }
+
+    os_printf("\n-----------------------------Dump Registers-----------------------------\n");
     os_printf("Function Registers:\n");
     os_printf("\tra(x1) = 0x%p(",regs -> ra);print_symbol_info(regs -> ra,OS_FALSE);os_printf(")\n");
     os_printf("\tuser_sp(x2) = 0x%p(",regs -> user_sp);print_symbol_info(regs -> user_sp,OS_FALSE);os_printf(")\n");

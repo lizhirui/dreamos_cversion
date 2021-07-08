@@ -8,6 +8,7 @@
  * 2021-05-18     lizhirui     the first version
  */
 
+// @formatter:off
 #ifndef __OS_INTERRUPT_H__
 #define __OS_INTERRUPT_H__
 
