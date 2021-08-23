@@ -28,23 +28,25 @@
 
     #define OS_BUILD_ASSERT(condition) ((void)sizeof(char[1 - 2 * (!(condition))]))
 
+    //符号表
     typedef struct os_symtab_header
     {
-        os_size_t function_table_offset;
-        os_size_t function_table_num;
-        os_size_t object_table_offset;
-        os_size_t object_table_num;
-        os_size_t general_symbol_table_offset;
-        os_size_t general_symbol_table_num;
-        os_size_t string_table_offset;
-        os_size_t string_table_size;
+        os_size_t function_table_offset;//函数表偏移
+        os_size_t function_table_num;//函数表表项数
+        os_size_t object_table_offset;//对象表偏移
+        os_size_t object_table_num;//对象表表项数
+        os_size_t general_symbol_table_offset;//一般符号表偏移
+        os_size_t general_symbol_table_num;//一般符号表表项数
+        os_size_t string_table_offset;//字符串表偏移
+        os_size_t string_table_size;//字符串表大小（字节数）
     }os_symtab_header;
 
+    //符号表表项
     typedef struct os_symtab_item
     {
-        os_size_t name_offset;
-        os_size_t address;
-        os_size_t size;
+        os_size_t name_offset;//符号名称在字符串表中的偏移
+        os_size_t address;//符号地址
+        os_size_t size;//符号大小
     }os_symtab_item;
 
     os_symtab_item *find_symbol_table(os_size_t symbol_table_addr,os_size_t symbol_num,os_size_t address);

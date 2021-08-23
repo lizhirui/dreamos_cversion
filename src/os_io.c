@@ -429,6 +429,11 @@ size_t os_vsnprintf(char *buf,size_t size,const char *fmt,va_list args)
     return str - buf;
 }
 
+/*!
+ * 打印字符串（支持格式化）
+ * @param fmt 格式化字符串
+ * @param ... 各个参数
+ */
 void os_printf(const char *fmt,...)
 {
     va_list args;
@@ -447,6 +452,10 @@ void os_printf(const char *fmt,...)
     va_end(args);
 }
 
+/*!
+ * 打印字符串
+ * @param str
+ */
 void os_puts(const char *str)
 {
     bsp_puts(str);

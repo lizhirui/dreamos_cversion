@@ -12,7 +12,12 @@
 // @formatter:off
 #include <dreamos.h>
 
-//用于内核断言支持
+/*!
+ * 断言违例处理程序
+ * @param ex_string 出错代码
+ * @param func 出错函数
+ * @param line 出错行号
+ */
 void os_assert_handler(const char *ex_string,const char *func,os_size_t line)
 {
     terminal_color_set(TERMINAL_COLOR_RED,TERMINAL_COLOR_BLACK);
@@ -25,7 +30,13 @@ extern os_size_t _osdebug_start;
 
 static os_symtab_header *symtab_header = (os_symtab_header *)&_osdebug_start;
 
-//该函数用于在指定的表中查找某个地址对应的符号的描述结构体指针，返回值的符号遵循规则详见文档
+/*!
+ * 该函数用于在指定的表中查找某个地址对应的符号的描述结构体指针，返回值的符号遵循规则详见文档
+ * @param symbol_table_addr 符号表地址
+ * @param symbol_num 符号数量
+ * @param address 待匹配的地址
+ * @return 符号描述信息结构体指针
+ */
 os_symtab_item *find_symbol_table(os_size_t symbol_table_addr,os_size_t symbol_num,os_size_t address)
 {
     os_size_t left = 0;
@@ -79,13 +90,21 @@ os_symtab_item *find_symbol_table(os_size_t symbol_table_addr,os_size_t symbol_n
     return &sym_table[left];
 }
 
-//该函数用于根据给定的符号指针从字符串表中找到对应的符号名指针并返回
+/*!
+ * 该函数用于根据给定的符号指针从字符串表中找到对应的符号名指针并返回
+ * @param symbol 符号描述信息结构体指针
+ * @return 符号名字符串指针
+ */
 const char *get_symbol_name(os_symtab_item *symbol)
 {
     return (const char *)((os_size_t)&_osdebug_start + symtab_header -> string_table_offset + symbol -> name_offset);
 }
 
-//该函数可以根据给定的符号和地址向中断打印出标准格式的符号信息
+/*!
+ * 该函数可以根据给定的符号和地址向中断打印出标准格式的符号信息
+ * @param symbol 要打印的符号描述信息结构体指针
+ * @param address 地址
+ */
 void print_symbol(os_symtab_item *symbol,os_size_t address)
 {
     os_printf("<%s(0x%p)",get_symbol_name(symbol),symbol -> address);
@@ -105,7 +124,11 @@ void print_symbol(os_symtab_item *symbol,os_size_t address)
     }
 }
 
-//该函数用于打印出一个地址关联的全部符号信息
+/*!
+ * 该函数用于打印出一个地址关联的全部符号信息
+ * @param address 地址
+ * @param function 该地址是否为函数
+ */
 void print_symbol_info(os_size_t address,os_bool_t function)
 {
     os_symtab_item *function_symbol = find_symbol_table(symtab_header -> function_table_offset,symtab_header -> function_table_num,address);
@@ -116,6 +139,7 @@ void print_symbol_info(os_size_t address,os_bool_t function)
     
     if(function)
     {
+        //若为函数，则按照函数符号、一般符号、对象符号的顺序匹配，且若函数符号存在，则不对后两种符号进行匹配
         while(function_symbol != OS_NULL)
         {
             if((function_symbol -> address + function_symbol -> size) > address)
@@ -187,6 +211,7 @@ void print_symbol_info(os_size_t address,os_bool_t function)
     }
     else
     {
+        //若不为函数，则按照对象符号、一般符号、函数符号的顺序匹配，且若函数符号存在，则不对后两种符号进行匹配
         while(object_symbol != OS_NULL)
         {
             if((object_symbol -> address + object_symbol -> size) > address)
@@ -263,7 +288,11 @@ void print_symbol_info(os_size_t address,os_bool_t function)
     }
 }
 
-//该函数用于在出错时打印出栈跟踪信息
+/*!
+ * 该函数用于在出错时打印出栈跟踪信息
+ * @param epc  出错指令地址
+ * @param fp 栈帧指针
+ */
 void print_stacktrace(os_size_t epc,os_size_t fp)
 {
     os_printf("-----------------------------Dump Stacktrace----------------------------\n\n");

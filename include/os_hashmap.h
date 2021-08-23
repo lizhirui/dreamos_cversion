@@ -18,19 +18,21 @@
 
     typedef os_size_t (*os_hashmap_hash_function_t)(os_hashmap_p hashmap,os_size_t key);
 
+    //hashmap结构体
     struct os_hashmap
     {
-        os_list_node_t *list;
-        os_size_t count;
-        os_size_t count_bit;
-        os_hashmap_hash_function_t hash_function;
+        os_list_node_t *list;//哈希节点列表集合
+        os_size_t count;//哈希节点列表数
+        os_size_t count_bit;//哈希节点列表数的2的对数
+        os_hashmap_hash_function_t hash_function;//哈希函数
     };
 
+    //哈希节点
     typedef struct os_hashmap_item
     {
-        os_size_t key;
-        void *value;
-        os_list_node_t node;
+        os_size_t key;//键
+        void *value;//值
+        os_list_node_t node;//列表节点
     }os_hashmap_item_t,*os_hashmap_item_p;
 
     os_err_t os_hashmap_create(os_hashmap_p hashmap,os_size_t count,os_hashmap_hash_function_t hash_function);

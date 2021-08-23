@@ -14,12 +14,13 @@
 
     #include <dreamos.h>
 
+    //位图结构体指针
     typedef struct os_bitmap
     {
-        os_size_t *memory;
-        os_size_t capacity;
-        os_size_t size;
-        os_bool_t allocated;
+        os_size_t *memory;//位图内存
+        os_size_t capacity;//位图内存实际大小（位数）
+        os_size_t size;//位图内存计划大小（位数）
+        os_bool_t allocated;//位图内存是否为自动分配
     }os_bitmap_t,*os_bitmap_p;
 
     os_err_t os_bitmap_create(os_bitmap_p bitmap,os_size_t size,void *memory,os_size_t default_value);

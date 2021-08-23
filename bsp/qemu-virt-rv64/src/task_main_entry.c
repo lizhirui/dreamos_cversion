@@ -204,12 +204,18 @@ static OS_NORETURN os_ssize_t os_task_user_entry(os_size_t arg)
 
 extern const os_vfs_romfs_dirent_t romfs_root;
 
+void bsp_console_init();
+
 os_ssize_t os_task_main_entry(os_size_t arg)
 {
     os_vfs_romfs_init();
+    os_vfs_devfs_init();
+    bsp_console_init();
 
     os_printf("\nmount root filesystem\n");
-    os_printf("mount = %d\n",os_vfs_mount("/","romfs",OS_NULL,OS_FILE_FLAG_RDWR,(void *)&romfs_root));
+    os_printf("mount = %d\n",os_vfs_mount("/","romfs",OS_NULL,OS_FILE_FLAG_RDONLY,(void *)&romfs_root));
+    os_printf("\nmount dev filesystem\n");
+    os_printf("mount = %d\n",os_vfs_mount("/dev","devfs",OS_NULL,OS_FILE_FLAG_RDONLY,OS_NULL));
 
     os_mutex_init(&mutex);
     //os_task_init(&task1,MAIN_TASK_STACK_SIZE,MAIN_TASK_PRIORITY,MAIN_TASK_TICK_INIT,task1_entry,0,"task1");
@@ -237,6 +243,7 @@ os_ssize_t os_task_main_entry(os_size_t arg)
         os_printf("task_main - 1s\n");
         os_printf("memory:%d/%d\n",os_get_allocated_memory(),os_get_total_memory());
         os_size_t tick = os_tick_get();
+        os_task_print_tree(os_task_get_root_task());
 
         while((os_tick_get() - tick) < TICK_PER_SECOND);
     }

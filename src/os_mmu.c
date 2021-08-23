@@ -12,8 +12,16 @@
 // @formatter:off
 #include <dreamos.h>
 
+//表示MMU子系统是否已初始化完成
 static os_bool_t os_mmu_initialized = OS_FALSE;
 
+/*!
+ * 创建IO Mapping
+ * @param vtable 页表结构体指针
+ * @param pa 要映射的物理地址
+ * @param size 映射大小
+ * @return 成功返回虚拟地址，失败返回OS_NULL
+ */
 void *os_mmu_create_io_mapping(os_mmu_vtable_p vtable,os_size_t pa,os_size_t size)
 {
     OS_ASSERT(vtable != OS_NULL);
@@ -34,6 +42,13 @@ void *os_mmu_create_io_mapping(os_mmu_vtable_p vtable,os_size_t pa,os_size_t siz
     return (void *)va;
 }
 
+
+/*!
+ * 移除IO Mapping
+ * @param vtable 页表
+ * @param va 要映射的虚拟地址
+ * @param size 映射大小
+ */
 void os_mmu_remove_io_mapping(os_mmu_vtable_p vtable,void *va,os_size_t size)
 {
     OS_ASSERT(vtable != OS_NULL);
@@ -47,6 +62,14 @@ void os_mmu_remove_io_mapping(os_mmu_vtable_p vtable,void *va,os_size_t size)
     //os_bitmap_set_bits(&vtable -> va_bitmap,va_n,size >> OS_MMU_OFFSET_BITS,1);
 }
 
+/*!
+ * 在指定虚拟地址处映射并自动分配物理内存空间
+ * @param vtable 页表结构体指针
+ * @param va 虚拟地址
+ * @param size 内存大小
+ * @param prot 内存属性
+ * @return 成功返回OS_TRUE，失败返回负数错误码
+ */
 os_err_t os_mmu_create_mapping_auto(os_mmu_vtable_p vtable,os_size_t va,os_size_t size,os_mmu_pt_prot_t prot)
 {
     size = ALIGN_UP(size,OS_MMU_PAGE_SIZE);
@@ -71,11 +94,23 @@ os_err_t os_mmu_create_mapping_auto(os_mmu_vtable_p vtable,os_size_t va,os_size_
     return OS_ERR_OK;
 }
 
+/*!
+ * 指示MMU子系统是否已初始化完成
+ * @return 若已初始化完成，则返回OS_TRUE，否则返回OS_FALSE
+ */
 os_bool_t os_mmu_is_initialized()
 {
     return os_mmu_initialized;
 }
 
+/*!
+ * 创建页表
+ * @param vtable 页表结构体指针
+ * @param l1_vtable l1页表指针，若为OS_NULL,则自动分配
+ * @param va_start 起始虚拟地址
+ * @param va_size 虚拟地址空间大小
+ * @return 成功返回OS_ERR_OK，l1页表分配失败，返回-OS_ERR_ENOMEM
+ */
 os_err_t os_mmu_vtable_create(os_mmu_vtable_p vtable,os_mmu_pt_l1_p l1_vtable,os_size_t va_start,os_size_t va_size)
 {
     OS_ASSERT(vtable != OS_NULL);
@@ -115,6 +150,11 @@ void os_mmu_vtable_bitmap_init(os_mmu_vtable_p vtable,void *memory)
     vtable -> bitmap_initialized = OS_TRUE;
 }*/
 
+/*!
+ * 销毁页表
+ * @param vtable 页表结构体指针
+ * @param remove_mapping 是否同时遍历销毁其中的每个映射（除了MMU子系统刚启动内核跳入时为OS_FALSE时，一般情况下都为OS_TRUE）
+ */
 void os_mmu_vtable_remove(os_mmu_vtable_p vtable,os_bool_t remove_mapping)
 {
     OS_ASSERT(vtable != OS_NULL);
@@ -144,8 +184,13 @@ void os_mmu_vtable_remove(os_mmu_vtable_p vtable,os_bool_t remove_mapping)
 
 void arch_mmu_switch(os_mmu_vtable_p vtable);
 
+//当前页表结构体指针
 static os_mmu_vtable_p current_vtable = OS_NULL;
 
+/*!
+ * 切换页表
+ * @param vtable 页表结构体指针
+ */
 void os_mmu_switch(os_mmu_vtable_p vtable)
 {
     OS_ASSERT(vtable != OS_NULL);
@@ -157,6 +202,10 @@ void os_mmu_switch(os_mmu_vtable_p vtable)
     }
 }
 
+/*!
+ * 获取当前的页表结构体指针
+ * @return
+ */
 os_mmu_vtable_p os_mmu_get_current_vtable()
 {
     return current_vtable;
@@ -164,6 +213,12 @@ os_mmu_vtable_p os_mmu_get_current_vtable()
 
 os_bool_t os_mmu_io_mapping_copy(os_mmu_vtable_p vtable);
 
+/*!
+ * 页面fault处理程序
+ * @param addr 出错地址
+ * @param write 是否为写操作
+ * @return 成功处理返回OS_TRUE，否则返回OS_FALSE
+ */
 os_bool_t os_mmu_page_fault_handler(os_size_t addr,os_bool_t write)
 {
     if(addr >= OS_MMU_MEMORYMAP_IO_START)
@@ -174,6 +229,9 @@ os_bool_t os_mmu_page_fault_handler(os_size_t addr,os_bool_t write)
     return OS_FALSE;
 }
 
+/*!
+ * MMU子系统初始化
+ */
 void os_mmu_init()
 {
     //os_mmu_vtable_bitmap_init(os_mmu_get_kernel_pagetable(),OS_NULL);

@@ -6,6 +6,7 @@
  * Change Logs:
  * Date           Author       Notes
  * 2021-05-18     lizhirui     the first version
+ * 2021-07-09     lizhirui     add a simple console driver
  */
 
 #include <dreamos.h>
@@ -83,4 +84,30 @@ void bsp_puts(const char *str)
         //while((uart_read_reg(LSR) & LSR_TX_IDLE) == 0);
         //uart_write_reg(THR,*str++);
     }
+}
+
+static os_err_t console_write(os_device_p dev,const void *buf,os_size_t pos,os_size_t size)
+{
+    os_size_t i;
+
+    for(i = 0;i < size;i++)
+    {
+        sbi_console_putchar(((const char *)buf)[i]);
+    }
+}
+
+static os_device_ops_t dev_ops =
+{
+    .write = console_write
+};
+
+static os_device_t dev_console =
+{
+    .name = "console",
+    .ops = &dev_ops
+};
+
+void bsp_console_init()
+{
+    os_device_register(&dev_console);
 }

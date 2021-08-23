@@ -11,28 +11,35 @@
 // @formatter:off
 #include <dreamos.h>
 
+//页面元信息结构体
 typedef struct page_metainfo
 {
-    os_size_t order;
-    os_size_t order_allocated;
-    struct page_metainfo *prev;
-    struct page_metainfo *next;
+    os_size_t order;//页面所属Order（即分配前的页面的大小）
+    os_size_t order_allocated;//已分配的页面所属Order（即分配后的页面大小）
+    struct page_metainfo *prev;//上一个页面元信息
+    struct page_metainfo *next;//下一个页面元信息
 }page_metainfo_t;
 
 extern os_size_t _heap_start;
 
+//Buddy system Order的最大值和上界
 #define BUDDY_ORDER_MAX (sizeof(os_size_t) << 3)
 #define BUDDY_ORDER_UPLIMIT (BUDDY_ORDER_MAX + 1)
 
-static page_metainfo_t page_list[BUDDY_ORDER_UPLIMIT];
+static page_metainfo_t page_list[BUDDY_ORDER_UPLIMIT];//按照Order排列的页面列表
 
-static os_size_t page_metainfo_start;
-static os_size_t page_metainfo_end;
-static os_size_t page_memory_start;
-static os_size_t page_memory_end;
-static os_size_t page_metainfo_bits_aligned;
-static os_size_t page_allocated;
+static os_size_t page_metainfo_start;//页面元信息开始地址
+static os_size_t page_metainfo_end;//页面元信息结束地址
+static os_size_t page_memory_start;//页面数据部分开始地址
+static os_size_t page_memory_end;//页面数据部分结束地址
+static os_size_t page_metainfo_bits_aligned;//完成2的幂对齐的元信息大小的2的对数
+static os_size_t page_allocated;//已分配的页面数
 
+/*!
+ * 页面地址转页面元信息结构体指针
+ * @param addr 页面地址
+ * @return 页面元信息结构体指针，失败返回OS_NULL
+ */
 static page_metainfo_t *addr_to_page_metainfo(os_size_t addr)
 {
     if(addr < page_memory_start)
@@ -50,6 +57,11 @@ static page_metainfo_t *addr_to_page_metainfo(os_size_t addr)
     return (page_metainfo_t *)r;
 }
 
+/*!
+ * 页面元信息结构体指针转页面地址
+ * @param page_metainfo 页面元信息结构体指针
+ * @return 页面地址，失败返回0
+ */
 static os_size_t page_metainfo_to_addr(page_metainfo_t *page_metainfo)
 {
     os_size_t r = (((((os_size_t)page_metainfo) - page_metainfo_start) >> page_metainfo_bits_aligned) << PAGE_BITS) + page_memory_start;
@@ -62,6 +74,11 @@ static os_size_t page_metainfo_to_addr(page_metainfo_t *page_metainfo)
     return r;
 }
 
+/*!
+ * 页面大小转Order
+ * @param size 页面大小
+ * @return Order，保证是满足size <= (1 << Order)条件的最小Order
+ */
 static inline os_size_t os_size_to_order(os_size_t size)
 {
     os_size_t pos = ALIGN_UP_MIN(size);
@@ -76,11 +93,22 @@ static inline os_size_t os_size_to_order(os_size_t size)
     }
 }
 
+/*!
+ * 获取页面的伙伴
+ * @param page 页面元信息结构体指针
+ * @param order 页面所属Order
+ * @return 伙伴页面的元信息结构体指针
+ */
 static inline page_metainfo_t *buddy_get(page_metainfo_t *page,os_size_t order)
 {
     addr_to_page_metainfo(page_metainfo_to_addr(page) ^ SIZE(order));
 }
 
+/*!
+ * 向指定Order加入新页
+ * @param order Order
+ * @param page 页面元信息结构体指针
+ */
 static void page_insert(os_size_t order,page_metainfo_t *page)
 {
     page -> prev = &page_list[order];
@@ -94,6 +122,10 @@ static void page_insert(os_size_t order,page_metainfo_t *page)
     }
 }
 
+/*!
+ * 从Order中移除页面
+ * @param page 页面元信息结构体指针
+ */
 static void page_remove(page_metainfo_t *page)
 {
     page -> prev -> next = page -> next;
@@ -106,6 +138,12 @@ static void page_remove(page_metainfo_t *page)
     page -> order = BUDDY_ORDER_UPLIMIT;
 }
 
+/*!
+ * 将页面升级为大一级的页面
+ * @param page 页面元信息结构体指针
+ * @param buddy page对应伙伴页面的元信息结构体指针
+ * @return
+ */
 static inline page_metainfo_t *get_big_page(page_metainfo_t *page,page_metainfo_t *buddy)
 {
     if(((os_size_t)page) <= ((os_size_t)buddy))
@@ -118,11 +156,17 @@ static inline page_metainfo_t *get_big_page(page_metainfo_t *page,page_metainfo_
     }
 }
 
+/*!
+ * 根据Order分配页面
+ * @param order 页面Order
+ * @return 成功返回页面地址，失败返回OS_NULL
+ */
 static void *_alloc(os_size_t order)
 {
     os_size_t i;
     OS_ENTER_CRITICAL_AREA();
 
+    //按照Order从小到大分配，直到遇到一个空闲页面位置
     for(i = order;i < BUDDY_ORDER_UPLIMIT;i++)
     {
         if(page_list[i].next != OS_NULL)
@@ -132,6 +176,7 @@ static void *_alloc(os_size_t order)
             page_remove(page);
             page -> order_allocated = order;
 
+            //若获得的页面大小大于要求的页面大小，则进行页面下放，直到获取到指定大小的页面位置
             while(i > order)
             {
                 i--;
@@ -152,12 +197,21 @@ static void *_alloc(os_size_t order)
     return OS_NULL;
 }
 
-//页面分配（其大小为2的幂，且>=size）
+/*!
+ * 页面分配（其大小为2的幂，且>=size）
+ * @param size 页面大小
+ * @return 成功返回页面地址，失败返回OS_NULL
+ */
 void *os_memory_page_alloc(os_size_t size)
 {
     return _alloc(os_size_to_order(size));
 }
 
+/*!
+ * 页面释放
+ * @param addr 页面地址
+ * @param old_order 页面已分配的Order
+ */
 static void _free(void *addr,os_size_t old_order)
 {
     OS_ENTER_CRITICAL_AREA();
@@ -185,7 +239,10 @@ static void _free(void *addr,os_size_t old_order)
     OS_LEAVE_CRITICAL_AREA();
 }
 
-//页面释放
+/*!
+ * 页面释放
+ * @param addr 页面地址
+ */
 void os_memory_page_free(void *addr)
 {
     OS_ENTER_CRITICAL_AREA();
@@ -194,24 +251,36 @@ void os_memory_page_free(void *addr)
     OS_LEAVE_CRITICAL_AREA();
 }
 
-//获取已分配的页面数量
+/*!
+ * 获取已分配的页面数量
+ * @return 已分配的页面数量
+ */
 os_size_t os_memory_page_get_allocated_page_count()
 {
     return page_allocated;
 }
 
-//获取总页面数量
+/*!
+ * 获取总页面数量
+ * @return 总页面数量
+ */
 os_size_t os_memory_page_get_total_page_count()
 {
     return (page_memory_end - page_memory_start) >> PAGE_BITS;
 }
 
-//获取空闲页面数量
+/*!
+ * 获取空闲页面数量
+ * @return 空闲页面数量
+ */
 os_size_t os_memory_page_get_free_page_count()
 {
     return os_memory_page_get_total_page_count() - os_memory_page_get_allocated_page_count();
 }
 
+/*!
+ * 一个简单的测试程序
+ */
 static void page_test()
 {
     void *mem1 = os_memory_page_alloc(131072);
@@ -229,7 +298,9 @@ static void page_test()
     OS_ASSERT(page_allocated == 0);
 }
 
-//buddy system初始化函数
+/*!
+ * Buddy System初始化函数
+ */
 void os_memory_page_init()
 {
     os_size_t heap_start = (os_size_t)&_heap_start;
@@ -240,6 +311,7 @@ void os_memory_page_init()
 
     os_size_t i;
 
+    //完成页面列表的初始化
     for(i = 0;i < BUDDY_ORDER_UPLIMIT;i++)
     {
         page_list[i].order = i;
@@ -247,6 +319,7 @@ void os_memory_page_init()
         page_list[i].next = OS_NULL;
     }
 
+    //进行页面元信息和数据部分的划分
     page_metainfo_bits_aligned = ALIGN_UP_MIN(sizeof(page_metainfo_t));
     os_size_t meta_size = SIZE(page_metainfo_bits_aligned);
     os_size_t page_size = OS_MMU_PAGE_SIZE;
@@ -258,6 +331,7 @@ void os_memory_page_init()
     os_printf("Page Layout:\nmeta_size = %ld\npage_size = %ld\npage_num = %ld\n",meta_size,page_size,page_num);
     os_printf("page_metainfo_start = 0x%p\npage_metainfo_end = 0x%p\npage_memory_start = 0x%p\npage_memory_end = 0x%p\n",page_metainfo_start,page_metainfo_end,page_memory_start,page_memory_end);
 
+    //初始化每个页面的元信息
     for(i = 0;i < page_num;i++)
     {
         page_metainfo_t *page = (page_metainfo_t *)(page_metainfo_start + (i << page_metainfo_bits_aligned));
@@ -266,6 +340,7 @@ void os_memory_page_init()
         page -> next = OS_NULL;
     }
 
+    //将所有的页面加入管理器进行管理
     page_allocated = page_num;
     
     os_size_t cur_page_addr = page_memory_start;

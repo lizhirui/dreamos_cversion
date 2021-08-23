@@ -17,7 +17,7 @@
 
     typedef os_ssize_t os_err_t;
 
-    #define OS_ERR_OK           0
+    #define OS_ERR_OK           0   /* Operation Successful */
     #define	OS_ERR_EPERM		1	/* Operation not permitted */
     #define	OS_ERR_ENOENT		2	/* No such file or directory */
     #define	OS_ERR_ESRCH		3	/* No such process */

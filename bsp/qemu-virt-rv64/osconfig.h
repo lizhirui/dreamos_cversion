@@ -22,4 +22,6 @@
 
     #define OS_ARCH64
 
+    #define OS_CONSOLE_DEVICE "/dev/console"
+
 #endif

@@ -13,5 +13,5 @@
 
 void bsp_init()
 {
-    os_init();
+
 }

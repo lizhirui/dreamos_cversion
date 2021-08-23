@@ -12,9 +12,12 @@
 // @formatter:off
 #include <dreamos.h>
 
+//标识内存子系统是否已经初始化完成
 static os_bool_t os_memory_initialized = OS_FALSE;
 
-//内核内存系统初始化函数
+/*!
+ * 内存子系统初始化函数
+ */
 void os_memory_init()
 {
     os_memory_page_init();
@@ -22,11 +25,20 @@ void os_memory_init()
     os_memory_initialized = OS_TRUE;
 }
 
+/*!
+ * 指示内存子系统是否已初始化完成
+ * @return 若初始化完成，则返回OS_TRUE，否则返回OS_FALSE
+ */
 os_bool_t os_memory_is_initialized()
 {
     return os_memory_initialized;
 }
 
+/*!
+ * 分配指定大小的内存
+ * @param size 内存大小
+ * @return 成功返回内存地址，失败返回OS_NULL
+ */
 void *os_memory_alloc(os_size_t size)
 {
     OS_ANNOTATION_NEED_DYNAMIC_MEMORY();
@@ -55,6 +67,10 @@ void *os_memory_alloc(os_size_t size)
     return ret;
 }
 
+/*!
+ * 释放内存
+ * @param mem 要释放的内存地址
+ */
 void os_memory_free(void *mem)
 {
     OS_ANNOTATION_NEED_DYNAMIC_MEMORY();
@@ -73,18 +89,30 @@ void os_memory_free(void *mem)
     OS_LEAVE_CRITICAL_AREA();
 }
 
+/*!
+ * 获取已分配的内存大小，获取的是buddy system已经分配的页面数，不考虑slub中的缓存空闲页面
+ * @return 已分配的内存大小
+ */
 os_size_t os_get_allocated_memory()
 {
     OS_ANNOTATION_NEED_DYNAMIC_MEMORY();
     return os_memory_page_get_allocated_page_count() * OS_MMU_PAGE_SIZE;
 }
 
+/*!
+ * 获取总内存大小
+ * @return 总内存大小
+ */
 os_size_t os_get_total_memory()
 {
     OS_ANNOTATION_NEED_DYNAMIC_MEMORY();
     return os_memory_page_get_total_page_count() * OS_MMU_PAGE_SIZE;
 }
 
+/*!
+ * 获取空闲内存大小
+ * @return 空闲内存大小
+ */
 os_size_t os_get_free_memory()
 {
     OS_ANNOTATION_NEED_DYNAMIC_MEMORY();

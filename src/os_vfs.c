@@ -12,25 +12,37 @@
 // @formatter:off
 #include <dreamos.h>
 
-static os_list_node_t fs_list;
-static os_list_node_t mount_list;
+static os_list_node_t fs_list;//文件系统列表
+static os_list_node_t mount_list;//文件系统挂载表
 
-static os_mutex_t vfs_global_lock;
+static os_mutex_t vfs_global_lock;//VFS全局锁
 
+//标识VFS是否初始化完成
 static os_bool_t os_vfs_initialized = OS_FALSE;
 
+/*!
+ * VFS加锁
+ */
 void vfs_lock()
 {
     OS_ANNOTATION_NEED_VFS();
     os_mutex_lock(&vfs_global_lock);
 }
 
+/*!
+ * VFS解锁
+ */
 void vfs_unlock()
 {
     OS_ANNOTATION_NEED_VFS();
     os_mutex_unlock(&vfs_global_lock);
 }
 
+/*!
+ * 通过文件系统名称在文件系统列表中文件系统结构体指针
+ * @param fs_name 文件系统名称
+ * @return 若找到，返回文件系统结构体指针，否则返回OS_NULL
+ */
 static os_vfs_p os_vfs_find_fs_by_name(const char *fs_name)
 {
     OS_ANNOTATION_NEED_VFS();
@@ -49,6 +61,11 @@ static os_vfs_p os_vfs_find_fs_by_name(const char *fs_name)
     return OS_NULL;
 }
 
+/*!
+ * 注册新的文件系统
+ * @param fs 文件系统结构体指针
+ * @return 成功返回OS_ERR_OK，若文件系统名称已存在，则返回-OS_ERR_EINVAL
+ */
 os_err_t os_vfs_register(const os_vfs_p fs)
 {
     OS_ANNOTATION_NEED_VFS();
@@ -66,6 +83,12 @@ os_err_t os_vfs_register(const os_vfs_p fs)
     return OS_ERR_OK;
 }
 
+/*!
+ * 正规化路径，该过程会去除路径中所有的.和..，并保证不出现连续的两个/，同时保证结尾不为/除非为根目录
+ * @param path 待正规化的路径
+ * @param buf 用于正规化路径保存的缓冲区
+ * @return 成功返回OS_ERR_OK，若路径长度超过OS_VFS_PATH_MAX或路径非法，返回-OS_ERR_EINVAL
+ */
 os_err_t os_vfs_normalize_path(const char *path,char *buf)
 {
     OS_ASSERT(path != OS_NULL);
@@ -77,7 +100,7 @@ os_err_t os_vfs_normalize_path(const char *path,char *buf)
         return -OS_ERR_EINVAL;
     }
 
-    OS_ERR_RETURN_ERROR(len >= OS_VFS_PATH_MAX,-OS_ERR_EINVAL);
+    OS_ERR_RETURN_ERROR(len > OS_VFS_PATH_MAX,-OS_ERR_EINVAL);
 
     //路径必须以斜杠开始
     if(path[0] != '/')
@@ -154,6 +177,11 @@ os_err_t os_vfs_normalize_path(const char *path,char *buf)
     return OS_ERR_OK;
 }
 
+/*!
+ * 根据路径查找挂载点，并返回挂载点结构体指针，原理是进行前缀路径匹配，最长的前缀匹配的挂载点就是目标挂载点
+ * @param path 路径
+ * @return 若找到则返回挂载点结构体指针，否则返回OS_NULL
+ */
 os_vfs_mp_p os_vfs_find_mp_by_path(const char *path)
 {
     OS_ANNOTATION_NEED_VFS();
@@ -184,12 +212,22 @@ os_vfs_mp_p os_vfs_find_mp_by_path(const char *path)
     return ret;
 }
 
+/*!
+ * 挂载文件系统
+ * @param mount_path 挂载路径
+ * @param fs_name 文件系统名称
+ * @param dev 设备名，可为OS_NULL
+ * @param mount_flag 挂载标志，参考OS_FILE_FLAG_开头的标志
+ * @param priv_data 私有数据
+ * @return 成功返回OS_ERR_OK，失败返回负数错误码
+ */
 os_err_t os_vfs_mount(const char *mount_path,const char *fs_name,const char *dev,os_size_t mount_flag,void *priv_data)
 {
     OS_ANNOTATION_NEED_VFS();
     vfs_lock();
 
     os_err_t ret = OS_ERR_OK;
+    //检测文件系统是否存在
     os_vfs_p fs = os_vfs_find_fs_by_name(fs_name);
 
     if(fs == OS_NULL)
@@ -197,13 +235,16 @@ os_err_t os_vfs_mount(const char *mount_path,const char *fs_name,const char *dev
         vfs_unlock();
         return -OS_ERR_EINVAL;
     }
-    
+
+    //对文件系统加锁
     os_mutex_lock(&fs -> lock);
+    //对路径进行正规化
     char *path_buf = os_memory_alloc(OS_VFS_PATH_MAX + 1);
     OS_ERR_SET_ERROR_AND_GOTO(path_buf == OS_NULL,ret,-OS_ERR_ENOMEM,path_buf_alloc_err);
     OS_ERR_GET_ERROR_AND_GOTO(os_vfs_normalize_path(mount_path,path_buf),ret,err);
     os_vfs_mp_p mount_mp = OS_NULL;
 
+    //特殊处理根文件系统的挂载，对于非根文件系统，这里获取挂载点所在的文件系统的挂载点
     if(os_strcmp(mount_path,"/") != 0)
     {
         os_file_state_t state;
@@ -213,6 +254,7 @@ os_err_t os_vfs_mount(const char *mount_path,const char *fs_name,const char *dev
         OS_ERR_SET_ERROR_AND_GOTO(state.type != OS_FILE_TYPE_DIRECTORY,ret,-OS_ERR_ENOTDIR,err);
     }
 
+    //若设备名不为OS_NULL，则获取对应的设备结构体指针
     os_device_p dev_obj = OS_NULL;
 
     if(dev != OS_NULL)
@@ -221,16 +263,23 @@ os_err_t os_vfs_mount(const char *mount_path,const char *fs_name,const char *dev
         OS_ERR_SET_ERROR_AND_GOTO(dev_obj == OS_NULL,ret,-OS_ERR_EINVAL,err);
     }
 
+    //分配新的挂载点
     os_vfs_mp_p mp = os_memory_alloc(sizeof(os_vfs_mp_t));
     OS_ERR_SET_ERROR_AND_GOTO(mp == OS_NULL,ret,-OS_ERR_ENOMEM,err);
 
     mp -> fs = fs;
     os_strcpy(mp -> path,path_buf);
+    //计算文件系统子路径偏移
     mp -> subpath_offset = os_strlen(mp -> path);
 
+    //若为根文件系统，则不需要子路径偏移，否则需要+1跳过/
     if(mp -> subpath_offset == 1)
     {
         mp -> subpath_offset = 0;
+    }
+    else
+    {
+        mp -> subpath_offset++;
     }
 
     mp -> dev_path = dev;
@@ -247,13 +296,15 @@ os_err_t os_vfs_mount(const char *mount_path,const char *fs_name,const char *dev
         os_memory_free(mp);
         goto err;
     }
-    
+
+    //增加父挂载点的引用数
     if(mount_mp != OS_NULL)
     {
         mount_mp -> mp_cnt++;
     }
 
     os_list_insert_tail(mount_list,&mp -> node);
+    //增加挂载点对应文件系统的应用数
     fs -> mount_refcnt++;
 
 err:
@@ -264,6 +315,11 @@ path_buf_alloc_err:
     return ret;
 }
 
+/*!
+ * 卸载文件系统
+ * @param mount_path 挂载路径
+ * @return 成功返回OS_TRUE，失败返回负数错误码
+ */
 os_err_t os_vfs_unmount(const char *mount_path)
 {
     OS_ANNOTATION_NEED_VFS();
@@ -297,6 +353,12 @@ path_buf_alloc_err:
     return ret;
 }
 
+/*!
+ * 格式化文件系统
+ * @param fs_name 文件系统名
+ * @param dev 设备名
+ * @return
+ */
 os_err_t os_vfs_mkfs(const char *fs_name,const char *dev)
 {
     OS_ANNOTATION_NOT_IMPLEMENT();
@@ -321,6 +383,12 @@ err:
     return ret;
 }
 
+/*!
+ * 获取文件系统状态信息
+ * @param mount_path 文件系统挂载路径，可以为该挂载点内的子路径
+ * @param state 返回的文件系统状态信息
+ * @return 成功返回OS_ERR_OK，失败返回负数错误码
+ */
 os_err_t os_vfs_statfs(const char *mount_path,os_vfs_state_p state)
 {
     OS_ANNOTATION_NEED_VFS();
@@ -348,6 +416,11 @@ path_buf_alloc_err:
     return ret;
 }
 
+/*!
+ * 删除文件
+ * @param path 文件路径
+ * @return 成功返回OS_ERR_OK，失败返回负数错误码
+ */
 os_err_t os_vfs_unlink(const char *path)
 {
     OS_ANNOTATION_NEED_VFS();
@@ -375,6 +448,12 @@ path_buf_alloc_err:
     return ret;
 }
 
+/*!
+ * 获取文件状态信息
+ * @param path 文件路径
+ * @param state 返回的文件状态信息
+ * @return 成功返回OS_ERR_OK，失败返回负数错误码
+ */
 os_err_t os_vfs_stat(const char *path,os_file_state_p state)
 {
     OS_ANNOTATION_NEED_VFS();
@@ -402,6 +481,12 @@ path_buf_alloc_err:
     return ret;
 }
 
+/*!
+ * 重命名文件，不支持跨文件系统
+ * @param old_path 文件旧路径
+ * @param new_path 文件新路径
+ * @return 成功返回OS_ERR_OK，失败返回负数错误码，返回-OS_ERR_EXDEV可能是因为两个路径不在一个文件系统内
+ */
 os_err_t os_vfs_rename(const char *old_path,const char *new_path)
 {
     OS_ANNOTATION_NEED_VFS();
@@ -442,11 +527,18 @@ old_path_buf_alloc_err:
     return ret;
 }
 
+/*!
+ * 指示VFS是否完成初始化
+ * @return 若完成初始化返回OS_TRUE，否则返回OS_FALSE
+ */
 os_bool_t os_vfs_is_initialized()
 {
     return os_vfs_initialized;
 }
 
+/*!
+ * VFS初始化函数
+ */
 void os_vfs_init()
 {
     os_list_init(fs_list);

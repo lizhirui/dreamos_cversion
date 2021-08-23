@@ -47,12 +47,36 @@
 
         typedef os_ssize_t (*os_syscall_handler_t)(struct TrapFrame *regs,os_size_t arg0,os_size_t arg1,os_size_t arg2,os_size_t arg3,os_size_t arg4,os_size_t arg5);
 
+        os_ssize_t os_syscall_getcwd(struct TrapFrame *regs,os_size_t buf,os_size_t size);
+        os_ssize_t os_syscall_pipe2(struct TrapFrame *regs,os_size_t *fd);
+        os_ssize_t os_syscall_dup(struct TrapFrame *regs,os_size_t fd);
+        os_ssize_t os_syscall_dup3(struct TrapFrame *regs,os_size_t old,os_size_t new);
+        os_ssize_t os_syscall_chdir(struct TrapFrame *regs,os_size_t path);
+        os_ssize_t os_syscall_openat(struct TrapFrame *regs,os_size_t fd,os_size_t filename,os_size_t flags,os_size_t mode);
+        os_ssize_t os_syscall_close(struct TrapFrame *regs,os_size_t fd);
+        os_ssize_t os_syscall_getdents64(struct TrapFrame *regs,os_size_t fd,os_size_t buf,os_size_t len);
+        os_ssize_t os_syscall_read(struct TrapFrame *regs,os_size_t fd,os_size_t buf,os_size_t count);
+        os_ssize_t os_syscall_write(struct TrapFrame *regs,os_size_t fdid,os_size_t buf,os_size_t count);
+        os_ssize_t os_syscall_linkat(struct TrapFrame *regs,os_size_t olddirfd,os_size_t oldpath,os_size_t newdirfd,os_size_t newpath,os_size_t flags);
+        os_ssize_t os_syscall_unlinkat(struct TrapFrame *regs,os_size_t dirfd,os_size_t path,os_size_t flags);
+        os_ssize_t os_syscall_mkdirat(struct TrapFrame *regs,os_size_t dirfd,os_size_t path,os_size_t mode);
+        os_ssize_t os_syscall_umount2(struct TrapFrame *regs,os_size_t special,os_size_t flag);
+        os_ssize_t os_syscall_mount(struct TrapFrame *regs,os_size_t special,os_size_t dir,os_size_t fstype,os_size_t flags,os_size_t data);
+        os_ssize_t os_syscall_fstat(struct TrapFrame *regs,os_size_t fd,os_size_t kst);
         os_ssize_t os_syscall_clone(struct TrapFrame *regs,os_size_t clone_flags,os_size_t newsp,os_size_t parent_tidptr,os_size_t child_tidptr,os_size_t tls);
-        os_ssize_t os_syscall_execve();
-        os_ssize_t os_syscall_write();
-        os_ssize_t os_syscall_exit();
-        os_ssize_t os_syscall_getpid();
-        os_ssize_t os_syscall_getppid();
+        os_ssize_t os_syscall_execve(struct TrapFrame *regs,os_size_t filename,os_size_t argv,os_size_t argc);
+        os_ssize_t os_syscall_wait4(struct TrapFrame *regs,os_size_t pid,os_size_t status,os_size_t options);
+        os_ssize_t os_syscall_exit(struct TrapFrame *regs,os_ssize_t ec);
+        os_ssize_t os_syscall_getpid(struct TrapFrame *regs);
+        os_ssize_t os_syscall_getppid(struct TrapFrame *regs);
+        os_ssize_t os_syscall_brk(struct TrapFrame *regs,os_size_t brk);
+        os_ssize_t os_syscall_munmap(struct TrapFrame *regs,os_size_t start,os_size_t len);
+        os_ssize_t os_syscall_mmap(struct TrapFrame *regs,os_size_t start,os_size_t len,os_size_t prot,os_size_t flags,os_size_t fd,os_size_t off);
+        os_ssize_t os_syscall_times(struct TrapFrame *regs,os_size_t tms);
+        os_ssize_t os_syscall_uname(struct TrapFrame *regs,os_size_t uts);
+        os_ssize_t os_syscall_sched_yield(struct TrapFrame *regs);
+        os_ssize_t os_syscall_gettimeofday(struct TrapFrame *regs,os_size_t ts);
+        os_size_t os_syscall_nanosleep(struct TrapFrame *regs,os_size_t req,os_size_t rem);
     #endif
 
 #endif

@@ -12,9 +12,12 @@
 // @formatter:off
 #include <dreamos.h>
 
+//系统全局Tick值
 static os_size_t global_tick = 0;
 
-//内核调度定时器中断处理程序
+/*!
+ * 内核调度定时器中断处理程序，应在定时器中断中被调用
+ */
 void os_tick_handler()
 {
     global_tick++;
@@ -31,6 +34,10 @@ void os_tick_handler()
     }
 }
 
+/*!
+ * 获取当前的系统全局Tick值
+ * @return
+ */
 os_size_t os_tick_get()
 {
     return global_tick;

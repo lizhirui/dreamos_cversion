@@ -55,6 +55,6 @@ void arch_task_execve_stack_frame_init(struct TrapFrame *regs,os_size_t entry)
 {
     os_size_t sstatus = regs -> sstatus;
     os_memset(regs,0,sizeof(struct TrapFrame));
-    regs -> sepc = entry;
+    regs -> sepc = entry - 4;
     regs -> sstatus = sstatus;
 }

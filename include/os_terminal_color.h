@@ -12,6 +12,7 @@
 #ifndef __OS_TERMINAL_COLOR_H__
 #define __OS_TERMINAL_COLOR_H__
 
+    //终端颜色枚举
     typedef enum
     {
         TERMINAL_COLOR_BLACK = 30,

@@ -42,6 +42,7 @@ add_executable(dreamos
         include/memory/os_memory_page.h
         include/memory/os_memory_slub.h
         include/vfs/os_vfs_romfs.h
+        include/vfs/os_vfs_devfs.h
         include/bsp_interface.h
         include/dreamos.h
         include/os_annotation.h
@@ -67,6 +68,7 @@ add_executable(dreamos
         src/memory/os_memory_page.c
         src/memory/os_memory_slub.c
         src/vfs/os_vfs_romfs.c
+        src/vfs/os_vfs_devfs.c
         src/os_annotation.c
         src/os_bitmap.c
         src/os_debug.c

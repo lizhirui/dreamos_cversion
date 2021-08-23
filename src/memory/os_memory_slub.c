@@ -12,8 +12,12 @@
 // @formatter:off
 #include <dreamos.h>
 
+//该数组每个成员对应一种大小的内存块
 static os_memory_slub_cache_t os_memory_slub_cache[OS_MEMORY_SLUB_MAX_ORDER + 1]; 
 
+/*!
+ * 一个简单的测试程序
+ */
 static void slub_test()
 {
     os_size_t i;
@@ -44,12 +48,16 @@ static void slub_test()
     }
 }
 
+/*!
+ * Slub初始化函数
+ */
 void os_memory_slub_init()
 {
     size_t i;
 
     OS_ASSERT((1 << OS_MEMORY_SLUB_BITS) == OS_MEMORY_SLUB_SIZE);
 
+    //对每种内存块对应的Cache进行初始化
     for(i = OS_MEMORY_SLUB_MIN_ORDER;i <= OS_MEMORY_SLUB_MAX_ORDER;i++)
     {
         os_memory_slub_cache[i].object_size = 1 << i;
@@ -64,7 +72,10 @@ void os_memory_slub_init()
     //slub_test();
 }
 
-//初始化空闲链表
+/*!
+ * 初始化空闲链表
+ * @param page Slub页面元信息结构体指针
+ */
 static void slub_page_init(os_memory_slub_page_p page)
 {
     //初始化页面数据结构
@@ -100,7 +111,10 @@ static void slub_page_init(os_memory_slub_page_p page)
     }
 }
 
-//扩增slub，分配最多SLUB_MIN_PARTIAL项
+/*!
+ * 扩增slub，分配最多SLUB_MIN_PARTIAL项
+ * @param cache Slub Cache结构体指针
+ */
 static void slub_expand(os_memory_slub_cache_p cache)
 {
     os_size_t i;
@@ -143,6 +157,11 @@ static void slub_expand(os_memory_slub_cache_p cache)
     }
 }
 
+/*!
+ * 分配指定大小的Slub
+ * @param size 内存块的大小，会向2次幂向上对齐，且最小大小为1 << OS_MEMORY_SLUB_MIN_ORDER
+ * @return 成功返回内存块地址，失败返回OS_NULL
+ */
 void *os_memory_slub_alloc(os_size_t size)
 {
     os_size_t order = MAX(ALIGN_UP_MIN(size),OS_MEMORY_SLUB_MIN_ORDER);
@@ -199,6 +218,10 @@ void *os_memory_slub_alloc(os_size_t size)
     return OS_MEMORY_SLUB_GET_OBJECT(new_object_metainfo,cache -> object_size);
 }
 
+/*!
+ * 释放一个内存块
+ * @param object 内存块地址
+ */
 void os_memory_slub_free(void *object)
 {
     //获得该object对应的slub

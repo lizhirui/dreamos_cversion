@@ -14,12 +14,13 @@
 
     #include <dreamos.h>
 
+    //互斥锁结构体
     typedef struct os_mutex
     {
-        os_task_p owner;
-        os_size_t refcnt;
-        os_bool_t locked;
-        os_waitqueue_t waitqueue;
+        os_task_p owner;//拥有者
+        os_size_t refcnt;//引用数，用于支持拥有者的递归调用
+        os_bool_t locked;//锁定状态
+        os_waitqueue_t waitqueue;//关联的等待队列
     }os_mutex_t,*os_mutex_p;
 
     void os_mutex_init(os_mutex_p mutex);

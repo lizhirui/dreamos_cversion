@@ -7,6 +7,7 @@
  * Date           Author       Notes
  * 2021-07-04     lizhirui     the first version
  * 2021-07-05     lizhirui     add vaddr find support
+ * 2021-07-09     lizhirui     fix a bug for remove function
  */
 
 // @formatter:off
@@ -14,21 +15,25 @@
 
 static os_bool_t os_mmu_preinitialized = OS_FALSE;
 
+//用于判断一个页表项是否为空项
 static inline os_bool_t __is_null_entry(os_size_t entry)
 {
     return entry == 0;
 }
 
+//获取页表项中的PPN字段值（页面编号）
 static inline os_size_t __get_ppn(os_size_t entry)
 {
     return entry >> __MMU_ENTRY_PPN_OFFSET_SHIFT;
 }
 
+//判断某个页表项是否指向下一个页表（即非叶子节点项）
 static inline os_bool_t __is_pagetable(os_size_t entry)
 {
     return ((entry & (__MMU_PROT_WRITE | __MMU_PROT_READ | __MMU_PROT_EXECUTE)) == 0) && (__get_ppn(entry) != 0);
 }
 
+//创建第三级页表
 static os_err_t __create_l3_entry(os_mmu_pt_l3_t *vtable,os_size_t va,os_size_t pa,os_size_t size,os_mmu_pt_prot_t prot)
 {
     os_size_t l3_id = OS_MMU_L3_ID(va);
@@ -300,7 +305,7 @@ static void os_mmu_remove_all_mapping_l2(os_mmu_pt_l2_t *vtable,os_bool_t is_use
             {
                 os_mmu_pt_l3_t *next_vtable = (os_mmu_pt_l3_t *)OS_MMU_PA_TO_VA(OS_MMU_PPN_TO_PA(__get_ppn(vtable[i].value)));
                 os_mmu_remove_all_mapping_l3(next_vtable,is_user_page);
-                os_memory_free((void *)OS_MMU_VA_TO_PA((os_size_t)next_vtable));
+                os_memory_free((void *)(os_size_t)next_vtable);
             }
             else if(is_user_page)
             {
@@ -324,7 +329,7 @@ void os_mmu_remove_all_mapping(os_mmu_vtable_p vtable)
             {
                 os_mmu_pt_l2_t *next_vtable = (os_mmu_pt_l2_t *)OS_MMU_PA_TO_VA(OS_MMU_PPN_TO_PA(__get_ppn(vtable -> l1_vtable[i].value)));
                 os_mmu_remove_all_mapping_l2(next_vtable,(i >= user_l1_start) && (i <= user_l1_end));
-                os_memory_free((void *)OS_MMU_VA_TO_PA((os_size_t)next_vtable));
+                os_memory_free((void *)(os_size_t)next_vtable);
             }
             else if((i >= user_l1_start) && (i <= user_l1_end))
             {

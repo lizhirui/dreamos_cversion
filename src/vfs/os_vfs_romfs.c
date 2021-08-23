@@ -11,6 +11,11 @@
 // @formatter:off
 #include <dreamos.h>
 
+/*!
+ * 检查指定的romfs目录项是否合法
+ * @param dirent 待检查的romfs目录项结构体指针
+ * @return
+ */
 static inline os_bool_t romfs_check_dirent(os_vfs_romfs_dirent_p dirent)
 {
     if((dirent -> type != OS_FILE_TYPE_REGULAR) 
@@ -22,6 +27,13 @@ static inline os_bool_t romfs_check_dirent(os_vfs_romfs_dirent_p dirent)
     return OS_TRUE;
 }
 
+/*!
+ * 用于根据路径查找对应的romfs目录项
+ * @param mp 挂载点结构体指针
+ * @param root_dirent romfs根目录项结构体指针
+ * @param path 路径
+ * @return 成功返回romfs目录项结构体指针，失败返回OS_NULL
+ */
 static os_vfs_romfs_dirent_p romfs_lookup(os_vfs_mp_p mp,os_vfs_romfs_dirent_p root_dirent,const char *path)
 {
     const char *subpath;
@@ -190,7 +202,7 @@ static os_err_t romfs_open(os_file_fd_p fd)
         }
 
         fd -> pos = 0;
-        return 0;
+        return OS_ERR_OK;
     }
 
     root_dirent = (os_vfs_romfs_dirent_p)fd -> fnode -> mp -> priv_data;
